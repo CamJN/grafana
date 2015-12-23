@@ -33,6 +33,8 @@ type Dashboard struct {
 	Created time.Time
 	Updated time.Time
 
+	UpdatedBy int64
+
 	Title string
 	Data  map[string]interface{}
 }
@@ -43,6 +45,8 @@ func NewDashboard(title string) *Dashboard {
 	dash.Data = make(map[string]interface{})
 	dash.Data["title"] = title
 	dash.Title = title
+	dash.Created = time.Now()
+	dash.Updated = time.Now()
 	dash.UpdateSlug()
 	return dash
 }
@@ -73,9 +77,12 @@ func NewDashboardFromJson(data map[string]interface{}) *Dashboard {
 
 		if dash.Data["version"] != nil {
 			dash.Version = int(dash.Data["version"].(float64))
+			dash.Updated = time.Now()
 		}
 	} else {
 		dash.Data["version"] = 0
+		dash.Created = time.Now()
+		dash.Updated = time.Now()
 	}
 
 	return dash
@@ -85,6 +92,7 @@ func NewDashboardFromJson(data map[string]interface{}) *Dashboard {
 func (cmd *SaveDashboardCommand) GetDashboardModel() *Dashboard {
 	dash := NewDashboardFromJson(cmd.Dashboard)
 	dash.OrgId = cmd.OrgId
+	dash.UpdatedBy = cmd.UpdatedBy
 	dash.UpdateSlug()
 	return dash
 }
@@ -108,6 +116,7 @@ type SaveDashboardCommand struct {
 	Dashboard map[string]interface{} `json:"dashboard" binding:"Required"`
 	Overwrite bool                   `json:"overwrite"`
 	OrgId     int64                  `json:"-"`
+	UpdatedBy int64                  `json:"-"`
 
 	Result *Dashboard
 }

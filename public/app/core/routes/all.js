@@ -6,7 +6,7 @@ define([
 ], function(angular, coreModule, BundleLoader) {
   "use strict";
 
-  coreModule.config(function($routeProvider, $locationProvider) {
+  coreModule.default.config(function($routeProvider, $locationProvider) {
     $locationProvider.html5Mode(true);
 
     var loadOrgBundle = new BundleLoader.BundleLoader('app/features/org/all');
@@ -130,6 +130,19 @@ define([
       .when('/user/password/reset', {
         templateUrl: 'app/partials/reset_password.html',
         controller : 'ResetPasswordCtrl',
+      })
+      .when('/plugins', {
+        templateUrl: 'app/features/org/partials/plugins.html',
+        controller: 'PluginsCtrl',
+        resolve: loadOrgBundle,
+      })
+      .when('/plugins/edit/:type', {
+        templateUrl: 'app/features/org/partials/pluginEdit.html',
+        controller: 'PluginEditCtrl',
+        resolve: loadOrgBundle,
+      })
+      .when('/global-alerts', {
+        templateUrl: 'app/features/dashboard/partials/globalAlerts.html',
       })
       .otherwise({
         templateUrl: 'app/partials/error.html',

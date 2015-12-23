@@ -1,11 +1,12 @@
 ///<reference path="../../headers/common.d.ts" />
 
-import angular = require('angular');
-import config = require('app/core/config');
-import coreModule = require('../core_module');
+import angular from 'angular';
+import config from 'app/core/config';
+import coreModule from '../core_module';
 
 export class SignUpCtrl {
 
+  /** @ngInject */
   constructor(
       private $scope : any,
       private $location : any,

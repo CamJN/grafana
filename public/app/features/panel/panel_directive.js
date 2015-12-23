@@ -13,12 +13,15 @@ function (angular, $, config) {
       restrict: 'E',
       link: function(scope, elem, attr) {
         var getter = $parse(attr.type), panelType = getter(scope);
-        var panelPath = config.panels[panelType].path;
+        var module = config.panels[panelType].module;
 
-        scope.require([panelPath + "/module"], function () {
+        System.import(module).then(function() {
           var panelEl = angular.element(document.createElement('grafana-panel-' + panelType));
           elem.append(panelEl);
           $compile(panelEl)(scope);
+        }).catch(function(err) {
+          console.log('Failed to load panel:', err);
+          scope.appEvent('alert-error', ['Panel Load Error', 'Failed to load panel ' + panelType + ', ' + err]);
         });
       }
     };

@@ -15,6 +15,9 @@ function (_, queryDef) {
 
     for (y = 0; y < target.metrics.length; y++) {
       metric = target.metrics[y];
+      if (metric.hide) {
+        continue;
+      }
 
       switch(metric.type) {
         case 'count': {
@@ -76,8 +79,16 @@ function (_, queryDef) {
           newSeries = { datapoints: [], metric: metric.type, field: metric.field, props: props};
           for (i = 0; i < esAgg.buckets.length; i++) {
             bucket = esAgg.buckets[i];
-            value = bucket[metric.id].value;
-            newSeries.datapoints.push([value, bucket.key]);
+
+            value = bucket[metric.id];
+            if (value !== undefined) {
+              if (value.normalized_value) {
+                newSeries.datapoints.push([value.normalized_value, bucket.key]);
+              } else {
+                newSeries.datapoints.push([value.value, bucket.key]);
+              }
+            }
+
           }
           seriesList.push(newSeries);
           break;
@@ -86,20 +97,71 @@ function (_, queryDef) {
     }
   };
 
+  ElasticResponse.prototype.processAggregationDocs = function(esAgg, aggDef, target, docs, props) {
+    var metric, y, i, bucket, metricName, doc;
+
+    for (i = 0; i < esAgg.buckets.length; i++) {
+      bucket = esAgg.buckets[i];
+      doc = _.defaults({}, props);
+      doc[aggDef.field] = bucket.key;
+
+      for (y = 0; y < target.metrics.length; y++) {
+        metric = target.metrics[y];
+
+        switch(metric.type) {
+          case "count": {
+            metricName = this._getMetricName(metric.type);
+            doc[metricName] = bucket.doc_count;
+            break;
+          }
+          case 'extended_stats': {
+            for (var statName in metric.meta) {
+              if (!metric.meta[statName]) {
+                continue;
+              }
+
+              var stats = bucket[metric.id];
+              // add stats that are in nested obj to top level obj
+              stats.std_deviation_bounds_upper = stats.std_deviation_bounds.upper;
+              stats.std_deviation_bounds_lower = stats.std_deviation_bounds.lower;
+
+              metricName = this._getMetricName(statName);
+              doc[metricName] = stats[statName];
+            }
+            break;
+          }
+          default:  {
+            metricName = this._getMetricName(metric.type);
+            doc[metricName] =bucket[metric.id].value;
+            break;
+          }
+        }
+      }
+
+      docs.push(doc);
+    }
+  };
+
   // This is quite complex
   // neeed to recurise down the nested buckets to build series
-  ElasticResponse.prototype.processBuckets = function(aggs, target, seriesList, props) {
+  ElasticResponse.prototype.processBuckets = function(aggs, target, seriesList, docs, props, depth) {
     var bucket, aggDef, esAgg, aggId;
+    var maxDepth = target.bucketAggs.length-1;
 
     for (aggId in aggs) {
       aggDef = _.findWhere(target.bucketAggs, {id: aggId});
       esAgg = aggs[aggId];
+
       if (!aggDef) {
         continue;
       }
 
-      if (aggDef.type === 'date_histogram') {
-        this.processMetrics(esAgg, target, seriesList, props);
+      if (depth === maxDepth) {
+        if (aggDef.type === 'date_histogram')  {
+          this.processMetrics(esAgg, target, seriesList, props);
+        } else {
+          this.processAggregationDocs(esAgg, aggDef, target, docs, props);
+        }
       } else {
         for (var nameIndex in esAgg.buckets) {
           bucket = esAgg.buckets[nameIndex];
@@ -109,7 +171,7 @@ function (_, queryDef) {
           } else {
             props["filter"] = nameIndex;
           }
-          this.processBuckets(bucket, target, seriesList, props);
+          this.processBuckets(bucket, target, seriesList, docs, props, depth+1);
         }
       }
     }
@@ -142,7 +204,14 @@ function (_, queryDef) {
       });
     }
 
-    if (series.field) {
+    if (series.field && queryDef.isPipelineAgg(series.metric)) {
+      var appliedAgg = _.findWhere(target.metrics, { id: series.field });
+      if (appliedAgg) {
+        metricName += ' ' + queryDef.describeMetric(appliedAgg);
+      } else {
+        metricName = 'Unset';
+      }
+    } else if (series.field) {
       metricName += ' ' + series.field;
     }
 
@@ -200,6 +269,21 @@ function (_, queryDef) {
     seriesList.push(series);
   };
 
+  ElasticResponse.prototype.trimDatapoints = function(aggregations, target) {
+    var histogram = _.findWhere(target.bucketAggs, { type: 'date_histogram'});
+
+    var shouldDropFirstAndLast = histogram && histogram.settings && histogram.settings.trimEdges;
+    if (shouldDropFirstAndLast) {
+      var trim = histogram.settings.trimEdges;
+      for(var prop in aggregations) {
+        var points = aggregations[prop];
+        if (points.datapoints.length > trim * 2) {
+          points.datapoints = points.datapoints.slice(trim, points.datapoints.length - trim);
+        }
+      }
+    }
+  };
+
   ElasticResponse.prototype.getTimeSeries = function() {
     var seriesList = [];
 
@@ -217,12 +301,18 @@ function (_, queryDef) {
         var aggregations = response.aggregations;
         var target = this.targets[i];
         var tmpSeriesList = [];
+        var docs = [];
 
-        this.processBuckets(aggregations, target, tmpSeriesList, {});
+        this.processBuckets(aggregations, target, tmpSeriesList, docs, {}, 0);
+        this.trimDatapoints(tmpSeriesList, target);
         this.nameSeries(tmpSeriesList, target);
 
         for (var y = 0; y < tmpSeriesList.length; y++) {
           seriesList.push(tmpSeriesList[y]);
+        }
+
+        if (seriesList.length === 0 && docs.length > 0) {
+          seriesList.push({target: 'docs', type: 'docs', datapoints: docs});
         }
       }
     }

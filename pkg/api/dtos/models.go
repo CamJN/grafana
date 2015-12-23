@@ -40,6 +40,8 @@ type DashboardMeta struct {
 	Slug       string    `json:"slug"`
 	Expires    time.Time `json:"expires"`
 	Created    time.Time `json:"created"`
+	Updated    time.Time `json:"updated"`
+	UpdatedBy  string    `json:"updatedBy"`
 }
 
 type DashboardFullWithMeta struct {
@@ -60,6 +62,7 @@ type DataSource struct {
 	BasicAuth         bool                   `json:"basicAuth"`
 	BasicAuthUser     string                 `json:"basicAuthUser"`
 	BasicAuthPassword string                 `json:"basicAuthPassword"`
+	WithCredentials   bool                   `json:"withCredentials"`
 	IsDefault         bool                   `json:"isDefault"`
 	JsonData          map[string]interface{} `json:"jsonData"`
 }

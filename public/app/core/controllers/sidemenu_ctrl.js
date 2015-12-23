@@ -8,26 +8,20 @@ define([
 function (angular, _, $, coreModule, config) {
   'use strict';
 
-  coreModule.controller('SideMenuCtrl', function($scope, $location, contextSrv, backendSrv) {
+  coreModule.default.controller('SideMenuCtrl', function($scope, $location, contextSrv, backendSrv) {
 
     $scope.getUrl = function(url) {
       return config.appSubUrl + url;
     };
 
     $scope.setupMainNav = function() {
-      $scope.mainLinks.push({
-        text: "Dashboards",
-        icon: "fa fa-fw fa-th-large",
-        href: $scope.getUrl("/"),
-      });
-
-      if (contextSrv.hasRole('Admin')) {
+      _.each(config.bootData.mainNavLinks, function(item) {
         $scope.mainLinks.push({
-          text: "Data Sources",
-          icon: "fa fa-fw fa-database",
-          href: $scope.getUrl("/datasources"),
+          text: item.text,
+          icon: item.icon,
+          href: $scope.getUrl(item.href)
         });
-      }
+      });
     };
 
     $scope.loadOrgs = function() {
@@ -120,6 +114,7 @@ function (angular, _, $, coreModule, config) {
     };
 
     $scope.init = function() {
+      $scope.showSignout = contextSrv.isSignedIn && !config['authProxyEnabled'];
       $scope.updateMenu();
       $scope.$on('$routeChangeSuccess', $scope.updateMenu);
     };
