@@ -1,5 +1,7 @@
 # 3.0.0 (unrelased master branch)
 
+### New Features ###
+* **Playlists**: Playlists can now be persisted and started from urls, closes [#3655](https://github.com/grafana/grafana/pull/3655)
 
 ### Breaking changes
 **InfluxDB 0.8.x** The data source for the old version of influxdb (0.8.x) is no longer included in default builds. Can easily be installed via improved plugin system, closes #3523
@@ -7,11 +9,16 @@
 
 ### Enhancements ###
 * **Sessions**: Support for memcached as session storage, closes [#3458](https://github.com/grafana/grafana/pull/3458)
+* **mysql**: Grafana now supports ssl for mysql, closes [#3584](https://github.com/grafana/grafana/pull/3584)
+* **snapshot**: Annotations are now included in snapshots, closes [#3635](https://github.com/grafana/grafana/pull/3635)
 
 # 2.6.1 (unrelased, 2.6.x branch)
 
 ### New Features
 * **Elasticsearch**: Support for derivative unit option, closes [#3512](https://github.com/grafana/grafana/issues/3512)
+
+### Bug fixes
+* **Graph Panel**: Fixed typehead when adding series style override, closes [#3554](https://github.com/grafana/grafana/issues/3554)
 
 # 2.6.0 (2015-12-14)
 

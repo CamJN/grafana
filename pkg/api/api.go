@@ -41,11 +41,14 @@ func Register(r *macaron.Macaron) {
 	r.Get("/admin/orgs", reqGrafanaAdmin, Index)
 	r.Get("/admin/orgs/edit/:id", reqGrafanaAdmin, Index)
 
-	r.Get("/plugins", reqSignedIn, Index)
-	r.Get("/plugins/edit/*", reqSignedIn, Index)
+	r.Get("/apps", reqSignedIn, Index)
+	r.Get("/apps/edit/*", reqSignedIn, Index)
 
 	r.Get("/dashboard/*", reqSignedIn, Index)
 	r.Get("/dashboard-solo/*", reqSignedIn, Index)
+
+	r.Get("/playlists/", reqSignedIn, Index)
+	r.Get("/playlists/*", reqSignedIn, Index)
 
 	// sign up
 	r.Get("/signup", Index)
@@ -117,6 +120,11 @@ func Register(r *macaron.Macaron) {
 			r.Get("/invites", wrap(GetPendingOrgInvites))
 			r.Post("/invites", quota("user"), bind(dtos.AddInviteForm{}), wrap(AddOrgInvite))
 			r.Patch("/invites/:code/revoke", wrap(RevokeInvite))
+
+			// apps
+			r.Get("/apps", wrap(GetOrgAppsList))
+			r.Get("/apps/:appId/settings", wrap(GetAppSettingsById))
+			r.Post("/apps/:appId/settings", bind(m.UpdateAppSettingsCmd{}), wrap(UpdateAppSettings))
 		}, reqOrgAdmin)
 
 		// create new org
@@ -169,6 +177,17 @@ func Register(r *macaron.Macaron) {
 			r.Get("/tags", GetDashboardTags)
 		})
 
+		// Playlist
+		r.Group("/playlists", func() {
+			r.Get("/", wrap(SearchPlaylists))
+			r.Get("/:id", ValidateOrgPlaylist, wrap(GetPlaylist))
+			r.Get("/:id/items", ValidateOrgPlaylist, wrap(GetPlaylistItems))
+			r.Get("/:id/dashboards", ValidateOrgPlaylist, wrap(GetPlaylistDashboards))
+			r.Delete("/:id", reqEditorRole, ValidateOrgPlaylist, wrap(DeletePlaylist))
+			r.Put("/:id", reqEditorRole, bind(m.UpdatePlaylistQuery{}), ValidateOrgPlaylist, wrap(UpdatePlaylist))
+			r.Post("/", reqEditorRole, bind(m.CreatePlaylistQuery{}), wrap(CreatePlaylist))
+		})
+
 		// Search
 		r.Get("/search/", Search)
 
@@ -190,6 +209,8 @@ func Register(r *macaron.Macaron) {
 
 	// rendering
 	r.Get("/render/*", reqSignedIn, RenderToPng)
+
+	InitApiPluginRoutes(r)
 
 	r.NotFound(NotFoundHandler)
 }
