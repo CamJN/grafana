@@ -23,7 +23,6 @@ function (angular, $, config, moment) {
       $timeout) {
 
     $scope.editor = { index: 0 };
-    $scope.topNavPartial = 'app/features/dashboard/partials/dashboardTopNav.html';
     $scope.panels = config.panels;
 
     var resizeEventTimeout;
@@ -58,7 +57,6 @@ function (angular, $, config, moment) {
 
         dashboardKeybindings.shortcuts($scope);
 
-        $scope.updateTopNavPartial();
         $scope.updateSubmenuVisibility();
         $scope.setWindowTitleAndTheme();
 
@@ -67,12 +65,6 @@ function (angular, $, config, moment) {
         if (err.data && err.data.message) { err.message = err.data.message; }
         $scope.appEvent("alert-error", ['Dashboard init failed', 'Template variables could not be initialized: ' + err.message]);
       });
-    };
-
-    $scope.updateTopNavPartial = function() {
-      if ($scope.dashboard.meta.isSnapshot) {
-        $scope.topNavPartial = 'app/features/dashboard/partials/snapshotTopNav.html';
-      }
     };
 
     $scope.updateSubmenuVisibility = function() {
@@ -110,7 +102,7 @@ function (angular, $, config, moment) {
       var editScope = $rootScope.$new();
       editScope.object = options.object;
       editScope.updateHandler = options.updateHandler;
-      $scope.appEvent('show-dash-editor', { src: 'app/partials/edit_json.html', scope: editScope });
+      $scope.appEvent('show-dash-editor', { src: 'public/app/partials/edit_json.html', scope: editScope });
     };
 
     $scope.onDrop = function(panelId, row, dropTarget) {

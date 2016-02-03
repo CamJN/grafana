@@ -1,29 +1,33 @@
 define([
-  'angular',
   './datasource',
 ],
-function (angular, GraphiteDatasource) {
+function (GraphiteDatasource) {
   'use strict';
 
-  var module = angular.module('grafana.directives');
+  function metricsQueryEditor() {
+    return {
+      controller: 'GraphiteQueryCtrl',
+      templateUrl: 'public/app/plugins/datasource/graphite/partials/query.editor.html'
+    };
+  }
 
-  module.directive('metricQueryEditorGraphite', function() {
-    return {controller: 'GraphiteQueryCtrl', templateUrl: 'app/plugins/datasource/graphite/partials/query.editor.html'};
-  });
+  function metricsQueryOptions() {
+    return {templateUrl: 'public/app/plugins/datasource/graphite/partials/query.options.html'};
+  }
 
-  module.directive('metricQueryOptionsGraphite', function() {
-    return {templateUrl: 'app/plugins/datasource/graphite/partials/query.options.html'};
-  });
+  function annotationsQueryEditor() {
+    return {templateUrl: 'public/app/plugins/datasource/graphite/partials/annotations.editor.html'};
+  }
 
-  module.directive('annotationsQueryEditorGraphite', function() {
-    return {templateUrl: 'app/plugins/datasource/graphite/partials/annotations.editor.html'};
-  });
-
-  module.directive('datasourceCustomSettingsViewGraphite', function() {
-    return {templateUrl: 'app/plugins/datasource/graphite/partials/config.html'};
-  });
+  function configView() {
+    return {templateUrl: 'public/app/plugins/datasource/graphite/partials/config.html'};
+  }
 
   return {
     Datasource: GraphiteDatasource,
+    configView: configView,
+    annotationsQueryEditor: annotationsQueryEditor,
+    metricsQueryEditor: metricsQueryEditor,
+    metricsQueryOptions: metricsQueryOptions,
   };
 });

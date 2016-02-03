@@ -1,29 +1,30 @@
 define([
-  'angular',
   './datasource',
 ],
-function (angular, InfluxDatasource) {
+function (InfluxDatasource) {
   'use strict';
 
-  var module = angular.module('grafana.directives');
+  function influxMetricsQueryEditor() {
+    return {controller: 'InfluxQueryCtrl', templateUrl: 'public/app/plugins/datasource/influxdb/partials/query.editor.html'};
+  }
 
-  module.directive('metricQueryEditorInfluxdb', function() {
-    return {controller: 'InfluxQueryCtrl', templateUrl: 'app/plugins/datasource/influxdb/partials/query.editor.html'};
-  });
+  function influxMetricsQueryOptions() {
+    return {templateUrl: 'public/app/plugins/datasource/influxdb/partials/query.options.html'};
+  }
 
-  module.directive('metricQueryOptionsInfluxdb', function() {
-    return {templateUrl: 'app/plugins/datasource/influxdb/partials/query.options.html'};
-  });
+  function influxAnnotationsQueryEditor() {
+    return {templateUrl: 'public/app/plugins/datasource/influxdb/partials/annotations.editor.html'};
+  }
 
-  module.directive('annotationsQueryEditorInfluxdb', function() {
-    return {templateUrl: 'app/plugins/datasource/influxdb/partials/annotations.editor.html'};
-  });
-
-  module.directive('datasourceCustomSettingsViewInfluxdb', function() {
-    return {templateUrl: 'app/plugins/datasource/influxdb/partials/config.html'};
-  });
+  function influxConfigView() {
+    return {templateUrl: 'public/app/plugins/datasource/influxdb/partials/config.html'};
+  }
 
   return {
-    Datasource: InfluxDatasource
+    Datasource:               InfluxDatasource,
+    metricsQueryEditor:       influxMetricsQueryEditor,
+    metricsQueryOptions:      influxMetricsQueryOptions,
+    annotationsQueryEditor:   influxAnnotationsQueryEditor,
+    configView:               influxConfigView,
   };
 });

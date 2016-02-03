@@ -11,6 +11,7 @@ function (angular, _, dateMath, InfluxSeries, InfluxQuery) {
 
   InfluxQuery = InfluxQuery.default;
 
+  /** @ngInject */
   function InfluxDatasource(instanceSettings, $q, backendSrv, templateSrv) {
     this.type = 'influxdb';
     this.urls = _.map(instanceSettings.url.split(','), function(url) {
@@ -116,14 +117,15 @@ function (angular, _, dateMath, InfluxSeries, InfluxQuery) {
         if (!influxResults.series) {
           return [];
         }
+
         var series = influxResults.series[0];
-
-        if (query.indexOf('SHOW MEASUREMENTS') === 0) {
-          return _.map(series.values, function(value) { return { text: value[0], expandable: true }; });
-        }
-
-        var flattenedValues = _.flatten(series.values);
-        return _.map(flattenedValues, function(value) { return { text: value, expandable: true }; });
+        return _.map(series.values, function(value) {
+          if (_.isArray(value)) {
+            return { text: value[0] };
+          } else {
+            return { text: value };
+          }
+        });
       });
     };
 
@@ -216,5 +218,4 @@ function (angular, _, dateMath, InfluxSeries, InfluxQuery) {
   }
 
   return InfluxDatasource;
-
 });

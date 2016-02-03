@@ -1,6 +1,7 @@
 ///<reference path="headers/common.d.ts" />
 
 import 'bootstrap';
+import 'vendor/filesaver';
 import 'lodash-src';
 import 'angular-strap';
 import 'angular-route';
@@ -8,12 +9,12 @@ import 'angular-sanitize';
 import 'angular-dragdrop';
 import 'angular-bindonce';
 import 'angular-ui';
-import 'app/core/core';
 
 import $ from 'jquery';
 import angular from 'angular';
 import config from 'app/core/config';
 import _ from 'lodash';
+import {coreModule} from './core/core';
 
 export class GrafanaApp {
   registerFunctions: any;
@@ -66,6 +67,9 @@ export class GrafanaApp {
       var moduleName = 'grafana.' + type;
       this.useModule(angular.module(moduleName, []));
     });
+
+    // makes it possible to add dynamic stuff
+    this.useModule(coreModule);
 
     var preBootRequires = [System.import('app/features/all')];
     var pluginModules = config.bootData.pluginModules || [];

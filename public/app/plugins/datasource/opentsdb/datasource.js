@@ -8,10 +8,13 @@ define([
 function (angular, _, dateMath) {
   'use strict';
 
+  /** @ngInject */
   function OpenTSDBDatasource(instanceSettings, $q, backendSrv, templateSrv) {
     this.type = 'opentsdb';
     this.url = instanceSettings.url;
     this.name = instanceSettings.name;
+    this.withCredentials = instanceSettings.withCredentials;
+    this.basicAuth = instanceSettings.basicAuth;
     this.supportMetrics = true;
 
     // Called once per panel (graph)
@@ -70,7 +73,18 @@ function (angular, _, dateMath) {
         url: this.url + '/api/query',
         data: reqBody
       };
+      if (this.basicAuth || this.withCredentials) {
+        options.withCredentials = true;
+      }
+      if (this.basicAuth) {
+        options.headers = {
+          "Authorization": this.basicAuth
+        };
+      }
 
+      // In case the backend is 3rd-party hosted and does not suport OPTIONS, urlencoded requests
+      // go as POST rather than OPTIONS+POST
+      options.headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
       return backendSrv.datasourceRequest(options);
     };
 
@@ -271,6 +285,10 @@ function (angular, _, dateMath) {
         }
 
         query.downsample = interval + "-" + target.downsampleAggregator;
+
+        if (target.downsampleFillPolicy && target.downsampleFillPolicy !== "none") {
+          query.downsample += "-" + target.downsampleFillPolicy;
+        }
       }
 
       query.tags = angular.copy(target.tags);

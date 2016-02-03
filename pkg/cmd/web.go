@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"path"
 
-	"github.com/Unknwon/macaron"
+	"gopkg.in/macaron.v1"
 
 	"github.com/grafana/grafana/pkg/api"
 	"github.com/grafana/grafana/pkg/api/static"
@@ -36,7 +36,6 @@ func newMacaron() *macaron.Macaron {
 	}
 
 	mapStatic(m, setting.StaticRootPath, "", "public")
-	mapStatic(m, setting.StaticRootPath, "app", "app")
 	mapStatic(m, setting.StaticRootPath, "css", "css")
 	mapStatic(m, setting.StaticRootPath, "img", "img")
 	mapStatic(m, setting.StaticRootPath, "fonts", "fonts")

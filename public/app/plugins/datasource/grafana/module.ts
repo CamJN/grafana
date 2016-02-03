@@ -5,10 +5,14 @@ import {GrafanaDatasource} from './datasource';
 
 var module = angular.module('grafana.directives');
 
-module.directive('metricQueryEditorGrafana', function() {
-  return {templateUrl: 'app/plugins/datasource/grafana/partials/query.editor.html'};
-});
+function grafanaMetricsQueryEditor() {
+  return {templateUrl: 'public/app/plugins/datasource/grafana/partials/query.editor.html'};
+}
 
 
-export {GrafanaDatasource, GrafanaDatasource as Datasource};
+export {
+  GrafanaDatasource,
+  GrafanaDatasource as Datasource,
+  grafanaMetricsQueryEditor as metricsQueryEditor
+};
 

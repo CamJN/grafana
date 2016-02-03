@@ -58,7 +58,7 @@
 // Links
 // -------------------------
 @linkColor:             darken(@white,11%);
-@linkColorDisabled:     darken(@linkColor,45%);
+@linkColorDisabled:     darken(@linkColor,30%);
 @linkColorHover:        @white;
 
 
@@ -75,7 +75,7 @@
 @altFontFamily:         @serifFontFamily;
 
 @headingsFontFamily:    inherit; // empty to use BS default, @baseFontFamily
-@headingsFontWeight:    bold;    // instead of browser default, bold
+@headingsFontWeight:    normal;    // instead of browser default, bold
 @headingsColor:         darken(@white,11%); // empty to use BS default, @textColor
 @inputText:             @black;
 
@@ -159,7 +159,10 @@
 
 // Sidemenu
 // -------------------------
-@sideMenuOrgBorder:             rgb(37,37,37);
+@sideMenuTopShadow:          @navbarDropdownShadow;
+@sideMenuBorder:             1px solid @bodyBackground;
+@sideMenuBackground:         @grayDark;
+@sideMenuBackgroundHighlight: lighten(@grayDark, 4%);
 
 // Dropdowns
 // -------------------------
@@ -168,7 +171,7 @@
 @dropdownDividerTop:            transparent;
 @dropdownDividerBottom:         #444;
 @dropdownDivider:               @dropdownDividerBottom;
-@dropdownTitle:                 @white;
+@dropdownTitle:                 @linkColorDisabled;
 
 @dropdownLinkColor:             @textColor;
 @dropdownLinkColorHover:        @white;
@@ -239,6 +242,8 @@
 @navbarBrandColor:                @linkColor;
 @navbarDropdownShadow:            inset 0px 4px 10px -4px @bodyBackground;
 
+@navbarButtonBackground:          lighten(@navbarBackground, 3%);
+@navbarButtonBackgroundHighlight: lighten(@navbarBackground, 5%);
 
 // Pagination
 // -------------------------

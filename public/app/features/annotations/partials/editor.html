@@ -33,8 +33,8 @@
 			<i class="fa fa-remove"></i>
 		</button>
 	</div>
-
 	<div class="gf-box-body">
+
 
 		<div class="editor-row row" ng-if="mode === 'list'">
 			<div class="span6">
@@ -91,7 +91,8 @@
 				</div>
 			</div>
 
-			<datasource-editor-view datasource="currentAnnotation.datasource" name="annotations-query-editor"></datasource-editor-view>
+			<annotations-query-editor datasource="currentDatasource" annotation="currentAnnotation">
+			</annotations-query-editor>
 
 			<br>
 			<button ng-show="mode === 'new'" type="button" class="btn btn-success" ng-click="add()">Add</button>

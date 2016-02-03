@@ -1,21 +1,20 @@
 define([
-  'angular',
   './datasource',
 ],
-function (angular, PromDatasource) {
+function (PromDatasource) {
   'use strict';
 
-  var module = angular.module('grafana.directives');
+  function metricsQueryEditor() {
+    return {controller: 'PrometheusQueryCtrl', templateUrl: 'public/app/plugins/datasource/prometheus/partials/query.editor.html'};
+  }
 
-  module.directive('metricQueryEditorPrometheus', function() {
-    return {controller: 'PrometheusQueryCtrl', templateUrl: 'app/plugins/datasource/prometheus/partials/query.editor.html'};
-  });
-
-  module.directive('datasourceCustomSettingsViewPrometheus', function() {
-    return {templateUrl: 'app/plugins/datasource/prometheus/partials/config.html'};
-  });
+  function configView() {
+    return {templateUrl: 'public/app/plugins/datasource/prometheus/partials/config.html'};
+  }
 
   return {
-    Datasource: PromDatasource
+    Datasource: PromDatasource,
+    metricsQueryEditor: metricsQueryEditor,
+    configView: configView,
   };
 });

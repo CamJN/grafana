@@ -1,10 +1,9 @@
-<topnav title="Data sources" icon="fa fa-fw fa-database" subnav="true">
+<navbar title="Data sources" title-url="datasources" icon="fa fa-fw fa-database" subnav="true">
 	<ul class="nav">
-		<li><a href="datasources">Overview</a></li>
-		<li ng-class="{active: isNew}"><a href="datasources/new">Add new</a></li>
-		<li class="active" ng-show="!isNew"><a href="datasources/edit/{{current.name}}">Edit</a></li>
+		<li ng-class="{active: isNew}" ng-show="isNew"><a href="datasources/new">Add new</a></li>
+		<li class="active" ng-show="!isNew"><a href="datasources/edit/{{current.name}}">{{current.name}}</a></li>
 	</ul>
-</topnav>
+</navbar>
 
 <div class="page-container">
 	<div class="page">
@@ -42,7 +41,7 @@
 				<div class="clearfix"></div>
 			</div>
 
-			<datasource-custom-settings-view ds-meta="datasourceMeta" current="current"></datasource-custom-settings-view>
+			<ds-config-view ng-if="datasourceMeta.id" ds-meta="datasourceMeta" current="current"></ds-config-view>
 
 			<div ng-if="testing" style="margin-top: 25px">
 				<h5 ng-show="!testing.done">Testing.... <i class="fa fa-spiner fa-spin"></i></h5>
@@ -59,7 +58,7 @@
 				<button type="submit" class="btn btn-inverse" ng-show="!isNew" ng-click="saveChanges(true)">
 					Test Connection
 				</button>
-				<a class="btn btn-inverse" ng-show="!isNew" href="datasources">Cancel</a>
+				<a class="btn btn-inverse" href="datasources">Cancel</a>
 			</div>
 			<br>
 		</form>

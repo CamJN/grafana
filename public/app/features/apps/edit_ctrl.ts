@@ -1,19 +1,19 @@
 ///<reference path="../../headers/common.d.ts" />
 
-import config from 'app/core/config';
 import angular from 'angular';
 import _ from 'lodash';
 
 export class AppEditCtrl {
   appModel: any;
+  includedPanels: any;
 
   /** @ngInject */
-  constructor(private backendSrv: any, private $routeParams: any) {}
-
-  init() {
+  constructor(private backendSrv: any, private $routeParams: any) {
     this.appModel = {};
+
     this.backendSrv.get(`/api/org/apps/${this.$routeParams.appId}/settings`).then(result => {
       this.appModel = result;
+      this.includedPanels = _.where(result.includes, {type: 'panel'});
     });
   }
 
@@ -24,6 +24,7 @@ export class AppEditCtrl {
       enabled: this.appModel.enabled,
       pinned: this.appModel.pinned,
       jsonData: this.appModel.jsonData,
+      secureJsonData: this.appModel.secureJsonData,
     }, options);
 
     this.backendSrv.post(`/api/org/apps/${this.$routeParams.appId}/settings`, updateCmd).then(function() {
