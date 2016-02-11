@@ -10,14 +10,8 @@
 
 		[[if .User.LightTheme]]
 		  <link rel="stylesheet" href="[[.AppSubUrl]]/public/css/grafana.light.min.css">
-		  [[ range $css := .PluginCss ]]
-			<link rel="stylesheet" href="[[$.AppSubUrl]]/[[ $css.Light ]]">
-		  [[ end ]]
 		[[else]]
 		  <link rel="stylesheet" href="[[.AppSubUrl]]/public/css/grafana.dark.min.css">
-		  [[ range $css := .PluginCss ]]
-			<link rel="stylesheet" href="[[$.AppSubUrl]]/[[ $css.Dark ]]">
-		  [[ end ]]
 		[[end]]
 
     <link rel="icon" type="image/png" href="[[.AppSubUrl]]/public/img/fav32.png">
@@ -26,7 +20,7 @@
 	</head>
 
 	<body ng-cloak>
-		<grafana-app>
+		<grafana-app class="grafana-app">
 
 			<aside class="sidemenu-wrapper">
 				<sidemenu ng-if="contextSrv.sidemenu"></sidemenu>
@@ -50,7 +44,6 @@
 		window.grafanaBootData = {
 			user:[[.User]],
 			settings: [[.Settings]],
-			pluginModules: [[.PluginModules]],
 			mainNavLinks: [[.MainNavLinks]]
 		};
 	</script>
@@ -59,7 +52,6 @@
 	<script src="[[.AppSubUrl]]/public/vendor/npm/es5-shim/es5-shim.js"></script>
 	<script src="[[.AppSubUrl]]/public/vendor/npm/es6-shim/es6-shim.js"></script>
 	<script src="[[.AppSubUrl]]/public/vendor/npm/es6-promise/dist/es6-promise.js"></script>
-	<script src="[[.AppSubUrl]]/public/vendor/npm/systemjs/dist/system-polyfills.js"></script>
 	<script src="[[.AppSubUrl]]/public/vendor/npm/systemjs/dist/system.src.js"></script>
 	<script src="[[.AppSubUrl]]/public/app/system.conf.js"></script>
 	<script src="[[.AppSubUrl]]/public/app/boot.js"></script>
