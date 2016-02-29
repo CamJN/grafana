@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/go-macaron/binding"
+	"github.com/grafana/grafana/pkg/api/avatar"
 	"github.com/grafana/grafana/pkg/api/dtos"
 	"github.com/grafana/grafana/pkg/middleware"
 	m "github.com/grafana/grafana/pkg/models"
@@ -42,8 +43,9 @@ func Register(r *macaron.Macaron) {
 	r.Get("/admin/orgs/edit/:id", reqGrafanaAdmin, Index)
 	r.Get("/admin/stats", reqGrafanaAdmin, Index)
 
-	r.Get("/apps", reqSignedIn, Index)
-	r.Get("/apps/edit/*", reqSignedIn, Index)
+	r.Get("/plugins", reqSignedIn, Index)
+	r.Get("/plugins/:id/edit", reqSignedIn, Index)
+	r.Get("/plugins/:id/page/:page", reqSignedIn, Index)
 
 	r.Get("/dashboard/*", reqSignedIn, Index)
 	r.Get("/dashboard-solo/*", reqSignedIn, Index)
@@ -125,9 +127,9 @@ func Register(r *macaron.Macaron) {
 			r.Patch("/invites/:code/revoke", wrap(RevokeInvite))
 
 			// apps
-			r.Get("/apps", wrap(GetOrgAppsList))
-			r.Get("/apps/:appId/settings", wrap(GetAppSettingsById))
-			r.Post("/apps/:appId/settings", bind(m.UpdateAppSettingsCmd{}), wrap(UpdateAppSettings))
+			r.Get("/plugins", wrap(GetPluginList))
+			r.Get("/plugins/:pluginId/settings", wrap(GetPluginSettingById))
+			r.Post("/plugins/:pluginId/settings", bind(m.UpdatePluginSettingCmd{}), wrap(UpdatePluginSetting))
 		}, reqOrgAdmin)
 
 		// create new org
@@ -223,6 +225,10 @@ func Register(r *macaron.Macaron) {
 
 	// rendering
 	r.Get("/render/*", reqSignedIn, RenderToPng)
+
+	// Gravatar service.
+	avt := avatar.CacheServer()
+	r.Get("/avatar/:hash", avt.ServeHTTP)
 
 	InitAppPluginRoutes(r)
 
