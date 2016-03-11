@@ -16,6 +16,7 @@ function (angular, _, dateMath) {
     this.basicAuth = instanceSettings.basicAuth;
     instanceSettings.jsonData = instanceSettings.jsonData || {};
     this.tsdbVersion = instanceSettings.jsonData.tsdbVersion || 1;
+    this.tsdbResolution = instanceSettings.jsonData.tsdbResolution || 1;
     this.supportMetrics = true;
     this.tagKeys = {};
 
@@ -62,16 +63,56 @@ function (angular, _, dateMath) {
 
           this._saveTagKeys(metricData);
 
-          return transformMetricData(metricData, groupByTags, options.targets[index], options);
+          return transformMetricData(metricData, groupByTags, options.targets[index], options, this.tsdbResolution);
         }.bind(this));
         return { data: result };
       }.bind(this));
     };
 
+    this.annotationQuery = function(options) {
+      var start = convertToTSDBTime(options.rangeRaw.from, false);
+      var end = convertToTSDBTime(options.rangeRaw.to, true);
+      var qs = [];
+      var eventList = [];
+
+      qs.push({ aggregator:"sum", metric:options.annotation.target });
+
+      var queries = _.compact(qs);
+
+      return this.performTimeSeriesQuery(queries, start, end).then(function(results) {
+        if(results.data[0]) {
+          var annotationObject = results.data[0].annotations;
+          if(options.annotation.isGlobal){
+            annotationObject = results.data[0].globalAnnotations;
+          }
+          if(annotationObject) {
+            _.each(annotationObject, function(annotation) {
+              var event = {
+                title: annotation.description,
+                time: Math.floor(annotation.startTime) * 1000,
+                text: annotation.notes,
+                annotation: options.annotation
+              };
+
+              eventList.push(event);
+            });
+          }
+        }
+        return eventList;
+
+      }.bind(this));
+    };
+
     this.performTimeSeriesQuery = function(queries, start, end) {
+      var msResolution = false;
+      if (this.tsdbResolution === 2) {
+        msResolution = true;
+      }
       var reqBody = {
         start: start,
-        queries: queries
+        queries: queries,
+        msResolution: msResolution,
+        globalAnnotations: true
       };
 
       // Relative queries (e.g. last hour) don't include an end time
@@ -246,14 +287,18 @@ function (angular, _, dateMath) {
       return filterTypesPromise;
     };
 
-    function transformMetricData(md, groupByTags, target, options) {
+    function transformMetricData(md, groupByTags, target, options, tsdbResolution) {
       var metricLabel = createMetricLabel(md, target, groupByTags, options);
       var dps = [];
 
       // TSDB returns datapoints has a hash of ts => value.
       // Can't use _.pairs(invert()) because it stringifies keys/values
       _.each(md.dps, function (v, k) {
-        dps.push([v, k * 1000]);
+        if (tsdbResolution === 2) {
+          dps.push([v, k * 1]);
+        } else {
+          dps.push([v, k * 1000]);
+        }
       });
 
       return { target: metricLabel, datapoints: dps };
