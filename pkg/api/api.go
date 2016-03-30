@@ -4,6 +4,7 @@ import (
 	"github.com/go-macaron/binding"
 	"github.com/grafana/grafana/pkg/api/avatar"
 	"github.com/grafana/grafana/pkg/api/dtos"
+	"github.com/grafana/grafana/pkg/api/live"
 	"github.com/grafana/grafana/pkg/middleware"
 	m "github.com/grafana/grafana/pkg/models"
 	"gopkg.in/macaron.v1"
@@ -35,6 +36,7 @@ func Register(r *macaron.Macaron) {
 	r.Get("/org/users/", reqSignedIn, Index)
 	r.Get("/org/apikeys/", reqSignedIn, Index)
 	r.Get("/dashboard/import/", reqSignedIn, Index)
+	r.Get("/admin", reqGrafanaAdmin, Index)
 	r.Get("/admin/settings", reqGrafanaAdmin, Index)
 	r.Get("/admin/users", reqGrafanaAdmin, Index)
 	r.Get("/admin/users/create", reqGrafanaAdmin, Index)
@@ -42,6 +44,8 @@ func Register(r *macaron.Macaron) {
 	r.Get("/admin/orgs", reqGrafanaAdmin, Index)
 	r.Get("/admin/orgs/edit/:id", reqGrafanaAdmin, Index)
 	r.Get("/admin/stats", reqGrafanaAdmin, Index)
+
+	r.Get("/styleguide", reqSignedIn, Index)
 
 	r.Get("/plugins", reqSignedIn, Index)
 	r.Get("/plugins/:id/edit", reqSignedIn, Index)
@@ -78,7 +82,7 @@ func Register(r *macaron.Macaron) {
 	r.Post("/api/snapshots/", bind(m.CreateDashboardSnapshotCommand{}), CreateDashboardSnapshot)
 	r.Get("/api/snapshot/shared-options/", GetSharingOptions)
 	r.Get("/api/snapshots/:key", GetDashboardSnapshot)
-	r.Get("/api/snapshots-delete/:key", DeleteDashboardSnapshot)
+	r.Get("/api/snapshots-delete/:key", reqEditorRole, DeleteDashboardSnapshot)
 
 	// api renew session based on remember cookie
 	r.Get("/api/login/ping", quota("session"), LoginApiPing)
@@ -175,9 +179,8 @@ func Register(r *macaron.Macaron) {
 		r.Group("/plugins", func() {
 			r.Get("/", wrap(GetPluginList))
 
-			r.Get("/dashboards/:pluginId", wrap(GetPluginDashboards))
-			r.Post("/dashboards/install", bind(dtos.InstallPluginDashboardCmd{}), wrap(InstallPluginDashboard))
-
+			r.Get("/:pluginId/readme", wrap(GetPluginReadme))
+			r.Get("/:pluginId/dashboards/", wrap(GetPluginDashboards))
 			r.Get("/:pluginId/settings", wrap(GetPluginSettingById))
 			r.Post("/:pluginId/settings", bind(m.UpdatePluginSettingCmd{}), wrap(UpdatePluginSetting))
 		}, reqOrgAdmin)
@@ -193,6 +196,7 @@ func Register(r *macaron.Macaron) {
 			r.Get("/file/:file", GetDashboardFromJsonFile)
 			r.Get("/home", GetHomeDashboard)
 			r.Get("/tags", GetDashboardTags)
+			r.Post("/import", bind(dtos.ImportDashboardCommand{}), wrap(ImportDashboard))
 		})
 
 		// Dashboard snapshots
@@ -238,7 +242,13 @@ func Register(r *macaron.Macaron) {
 	avt := avatar.CacheServer()
 	r.Get("/avatar/:hash", avt.ServeHTTP)
 
+	// Websocket
+	liveConn := live.New()
+	r.Any("/ws", liveConn.Serve)
+
+	// streams
+	r.Post("/api/streams/push", reqSignedIn, bind(dtos.StreamMessage{}), liveConn.PushToStream)
+
 	InitAppPluginRoutes(r)
 
-	r.NotFound(NotFoundHandler)
 }

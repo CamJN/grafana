@@ -5,15 +5,18 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/grafana/grafana/pkg/cmd/grafana-cli/log"
-	m "github.com/grafana/grafana/pkg/cmd/grafana-cli/models"
-	s "github.com/grafana/grafana/pkg/cmd/grafana-cli/services"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
 	"regexp"
+	"strings"
+
+	"github.com/fatih/color"
+	"github.com/grafana/grafana/pkg/cmd/grafana-cli/log"
+	m "github.com/grafana/grafana/pkg/cmd/grafana-cli/models"
+	s "github.com/grafana/grafana/pkg/cmd/grafana-cli/services"
 )
 
 func validateInput(c CommandLine, pluginFolder string) error {
@@ -22,17 +25,16 @@ func validateInput(c CommandLine, pluginFolder string) error {
 		return errors.New("please specify plugin to install")
 	}
 
-	pluginDir := c.GlobalString("path")
-	if pluginDir == "" {
-		return errors.New("missing path flag")
+	pluginsDir := c.GlobalString("pluginsDir")
+	if pluginsDir == "" {
+		return errors.New("missing pluginsDir flag")
 	}
 
-	fileInfo, err := os.Stat(pluginDir)
+	fileInfo, err := os.Stat(pluginsDir)
 	if err != nil {
-		if err = os.MkdirAll(pluginDir, os.ModePerm); err != nil {
-			return errors.New("path is not a directory")
+		if err = os.MkdirAll(pluginsDir, os.ModePerm); err != nil {
+			return errors.New(fmt.Sprintf("pluginsDir (%s) is not a directory", pluginsDir))
 		}
-
 		return nil
 	}
 
@@ -44,7 +46,7 @@ func validateInput(c CommandLine, pluginFolder string) error {
 }
 
 func installCommand(c CommandLine) error {
-	pluginFolder := c.GlobalString("path")
+	pluginFolder := c.GlobalString("pluginsDir")
 	if err := validateInput(c, pluginFolder); err != nil {
 		return err
 	}
@@ -52,18 +54,12 @@ func installCommand(c CommandLine) error {
 	pluginToInstall := c.Args().First()
 	version := c.Args().Get(1)
 
-	if version == "" {
-		log.Infof("version: latest\n")
-	} else {
-		log.Infof("version: %v\n", version)
-	}
-
 	return InstallPlugin(pluginToInstall, version, c)
 }
 
 func InstallPlugin(pluginName, version string, c CommandLine) error {
 	plugin, err := s.GetPlugin(pluginName, c.GlobalString("repo"))
-	pluginFolder := c.GlobalString("path")
+	pluginFolder := c.GlobalString("pluginsDir")
 	if err != nil {
 		return err
 	}
@@ -85,13 +81,14 @@ func InstallPlugin(pluginName, version string, c CommandLine) error {
 	log.Infof("installing %v @ %v\n", plugin.Id, version)
 	log.Infof("from url: %v\n", downloadURL)
 	log.Infof("into: %v\n", pluginFolder)
+	log.Info("\n")
 
 	err = downloadFile(plugin.Id, pluginFolder, downloadURL)
 	if err != nil {
 		return err
 	}
 
-	log.Infof("Installed %v successfully ✔\n", plugin.Id)
+	log.Infof("%s Installed %s successfully \n", color.GreenString("✔"), plugin.Id)
 
 	/* Enable once we need support for downloading depedencies
 	res, _ := s.ReadPlugin(pluginFolder, pluginName)
@@ -160,7 +157,11 @@ func downloadFile(pluginName, filePath, url string) (err error) {
 		} else {
 			dst, err := os.Create(newFile)
 			if err != nil {
-				log.Errorf("%v", err)
+				if strings.Contains(err.Error(), "permission denied") {
+					return fmt.Errorf(
+						"Could not create file %s. permission deined. Make sure you have write access to plugindir",
+						newFile)
+				}
 			}
 			defer dst.Close()
 			src, err := zf.Open()

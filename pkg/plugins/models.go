@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/grafana/grafana/pkg/log"
+	"github.com/grafana/grafana/pkg/models"
 	"github.com/grafana/grafana/pkg/setting"
 )
 
@@ -30,19 +31,21 @@ type PluginLoader interface {
 }
 
 type PluginBase struct {
-	Type          string             `json:"type"`
-	Name          string             `json:"name"`
-	Id            string             `json:"id"`
-	Info          PluginInfo         `json:"info"`
-	Dependencies  PluginDependencies `json:"dependencies"`
-	Includes      []*PluginInclude   `json:"includes"`
-	Module        string             `json:"module"`
-	BaseUrl       string             `json:"baseUrl"`
-	StaticRoot    string             `json:"staticRoot"`
-	StaticRootAbs string             `json:"-"`
+	Type         string             `json:"type"`
+	Name         string             `json:"name"`
+	Id           string             `json:"id"`
+	Info         PluginInfo         `json:"info"`
+	Dependencies PluginDependencies `json:"dependencies"`
+	Includes     []*PluginInclude   `json:"includes"`
+	Module       string             `json:"module"`
+	BaseUrl      string             `json:"baseUrl"`
 
 	IncludedInAppId string `json:"-"`
 	PluginDir       string `json:"-"`
+	DefaultNavUrl   string `json:"-"`
+
+	// cache for readme file contents
+	Readme []byte `json:"-"`
 }
 
 func (pb *PluginBase) registerPlugin(pluginDir string) error {
@@ -73,10 +76,16 @@ type PluginDependencies struct {
 }
 
 type PluginInclude struct {
-	Name string `json:"name"`
-	Path string `json:"path"`
-	Type string `json:"type"`
-	Id   string `json:"id"`
+	Name       string          `json:"name"`
+	Path       string          `json:"path"`
+	Type       string          `json:"type"`
+	Component  string          `json:"component"`
+	Role       models.RoleType `json:"role"`
+	AddToNav   bool            `json:"addToNav"`
+	DefaultNav bool            `json:"defaultNav"`
+	Slug       string          `json:"slug"`
+
+	Id string `json:"-"`
 }
 
 type PluginDependencyItem struct {
