@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/grafana/grafana/pkg/api/dtos"
+	"github.com/grafana/grafana/pkg/bus"
 	"github.com/grafana/grafana/pkg/middleware"
 	m "github.com/grafana/grafana/pkg/models"
 	"github.com/grafana/grafana/pkg/plugins"
@@ -14,6 +15,12 @@ func setIndexViewData(c *middleware.Context) (*dtos.IndexViewData, error) {
 		return nil, err
 	}
 
+	prefsQuery := m.GetPreferencesWithDefaultsQuery{OrgId: c.OrgId, UserId: c.UserId}
+	if err := bus.Dispatch(&prefsQuery); err != nil {
+		return nil, err
+	}
+	prefs := prefsQuery.Result
+
 	var data = dtos.IndexViewData{
 		User: &dtos.CurrentUser{
 			Id:             c.UserId,
@@ -21,12 +28,13 @@ func setIndexViewData(c *middleware.Context) (*dtos.IndexViewData, error) {
 			Login:          c.Login,
 			Email:          c.Email,
 			Name:           c.Name,
-			LightTheme:     c.Theme == "light",
 			OrgId:          c.OrgId,
 			OrgName:        c.OrgName,
 			OrgRole:        c.OrgRole,
 			GravatarUrl:    dtos.GetGravatarUrl(c.Email),
 			IsGrafanaAdmin: c.IsGrafanaAdmin,
+			LightTheme:     prefs.Theme == "light",
+			Timezone:       prefs.Timezone,
 		},
 		Settings:           settings,
 		AppUrl:             setting.AppUrl,
@@ -95,6 +103,10 @@ func setIndexViewData(c *middleware.Context) (*dtos.IndexViewData, error) {
 			}
 
 			for _, include := range plugin.Includes {
+				if !c.HasUserRole(include.Role) {
+					continue
+				}
+
 				if include.Type == "page" && include.AddToNav {
 					link := &dtos.NavLink{
 						Url:  setting.AppSubUrl + "/plugins/" + plugin.Id + "/page/" + include.Slug,
@@ -102,6 +114,7 @@ func setIndexViewData(c *middleware.Context) (*dtos.IndexViewData, error) {
 					}
 					appLink.Children = append(appLink.Children, link)
 				}
+
 				if include.Type == "dashboard" && include.AddToNav {
 					link := &dtos.NavLink{
 						Url:  setting.AppSubUrl + "/dashboard/db/" + include.Slug,
@@ -116,7 +129,9 @@ func setIndexViewData(c *middleware.Context) (*dtos.IndexViewData, error) {
 				appLink.Children = append(appLink.Children, &dtos.NavLink{Text: "Plugin Config", Icon: "fa fa-cog", Url: setting.AppSubUrl + "/plugins/" + plugin.Id + "/edit"})
 			}
 
-			data.MainNavLinks = append(data.MainNavLinks, appLink)
+			if len(appLink.Children) > 0 {
+				data.MainNavLinks = append(data.MainNavLinks, appLink)
+			}
 		}
 	}
 

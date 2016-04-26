@@ -15,15 +15,20 @@ type PluginSetting struct {
 	Dependencies  *plugins.PluginDependencies `json:"dependencies"`
 	JsonData      map[string]interface{}      `json:"jsonData"`
 	DefaultNavUrl string                      `json:"defaultNavUrl"`
+
+	LatestVersion string `json:"latestVersion"`
+	HasUpdate     bool   `json:"hasUpdate"`
 }
 
 type PluginListItem struct {
-	Name    string              `json:"name"`
-	Type    string              `json:"type"`
-	Id      string              `json:"id"`
-	Enabled bool                `json:"enabled"`
-	Pinned  bool                `json:"pinned"`
-	Info    *plugins.PluginInfo `json:"info"`
+	Name          string              `json:"name"`
+	Type          string              `json:"type"`
+	Id            string              `json:"id"`
+	Enabled       bool                `json:"enabled"`
+	Pinned        bool                `json:"pinned"`
+	Info          *plugins.PluginInfo `json:"info"`
+	LatestVersion string              `json:"latestVersion"`
+	HasUpdate     bool                `json:"hasUpdate"`
 }
 
 type PluginList []PluginListItem
@@ -43,6 +48,6 @@ func (slice PluginList) Swap(i, j int) {
 type ImportDashboardCommand struct {
 	PluginId  string                         `json:"pluginId"`
 	Path      string                         `json:"path"`
-	Reinstall bool                           `json:"reinstall"`
+	Overwrite bool                           `json:"overwrite"`
 	Inputs    []plugins.ImportDashboardInput `json:"inputs"`
 }

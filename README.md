@@ -1,8 +1,10 @@
-[Grafana](http://grafana.org) [![Circle CI](https://circleci.com/gh/grafana/grafana.svg?style=svg)](https://circleci.com/gh/grafana/grafana) [![Coverage Status](https://coveralls.io/repos/grafana/grafana/badge.png)](https://coveralls.io/r/grafana/grafana) [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/grafana/grafana?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[Grafana](http://grafana.org) [![Circle CI](https://circleci.com/gh/grafana/grafana.svg?style=svg)](https://circleci.com/gh/grafana/grafana) [![Coverage Status](https://coveralls.io/repos/grafana/grafana/badge.png)](https://coveralls.io/r/grafana/grafana)
 ================
 [Website](http://grafana.org) |
 [Twitter](https://twitter.com/grafana) |
 [IRC](https://webchat.freenode.net/?channels=grafana) |
+![](https://brandfolder.com/api/favicon/icon?size=16&domain=www.slack.com)
+[Slack](http://slack.raintank.io) |
 [Email](mailto:contact@grafana.org)
 
 Grafana is an open source, feature rich metrics dashboard and graph editor for
@@ -77,6 +79,7 @@ the latest master builds [here](http://grafana.org/download/builds)
 
 - Go 1.5
 - NodeJS
+- [Godep](https://github.com/tools/godep)
 
 ### Get Code
 
@@ -100,8 +103,7 @@ npm (v2.5.0) and grunt (v0.4.5). Run the following:
 
 ```bash
 npm install
-npm install -g grunt-cli
-grunt
+npm run build
 ```
 
 ### Recompile backend on source change
@@ -142,4 +144,3 @@ please [sign the CLA](http://docs.grafana.org/project/cla/)
 
 Grafana is distributed under Apache 2.0 License.
 Work in progress Grafana 2.0 (with included Grafana backend)
-

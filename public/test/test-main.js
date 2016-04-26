@@ -10,6 +10,7 @@
     baseURL: '/base/',
     defaultJSExtensions: true,
     paths: {
+      'eventemitter3': 'vendor/npm/eventemitter3/index.js',
       'tether': 'vendor/npm/tether/dist/js/tether.js',
       'tether-drop': 'vendor/npm/tether-drop/dist/js/drop.js',
       'moment': 'vendor/moment.js',
@@ -34,7 +35,8 @@
       "jquery.flot.stackpercent": "vendor/flot/jquery.flot.stackpercent",
       "jquery.flot.time": "vendor/flot/jquery.flot.time",
       "jquery.flot.crosshair": "vendor/flot/jquery.flot.crosshair",
-      "jquery.flot.fillbelow": "vendor/flot/jquery.flot.fillbelow"
+      "jquery.flot.fillbelow": "vendor/flot/jquery.flot.fillbelow",
+      "jquery.flot.gauge": "vendor/flot/jquery.flot.gauge"
     },
 
     packages: {
@@ -58,7 +60,11 @@
       'vendor/angular-mocks/angular-mocks.js': {
         format: 'global',
         deps: ['angular'],
-      }
+      },
+      'vendor/npm/eventemitter3/index.js': {
+        format: 'cjs',
+        exports: 'EventEmitter'
+      },
     }
   });
 
