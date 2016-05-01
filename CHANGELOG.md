@@ -1,7 +1,17 @@
-# 3.0.0-beta6 (unreleased)
+# 3.0.0-beta7 (unreleased)
+
+### Bug fixes
+* **Dashboard title**: Fixed max dashboard title width (media query) for large screens,  fixes [#4859](https://github.com/grafana/grafana/issues/4859)
+* **Annotations**: Fixed issue with entering annotation edit view, fixes [#4857](https://github.com/grafana/grafana/issues/4857)
+* **Remove query**: Fixed issue with removing query for data sources without collapsable query editors, fixes [#4856](https://github.com/grafana/grafana/issues/4856)
+* **Graphite PNG*: Fixed issue graphite png rendering option, fixes [#4864](https://github.com/grafana/grafana/issues/4864)
+* **InfluxDB**: Fixed issue missing plus group by iconn, fixes [#4862](https://github.com/grafana/grafana/issues/4862)
+
+# 3.0.0-beta6 (2016-04-29)
 
 ### Enhancements
 * **Singlestat**: Support for gauges in singlestat panel. closes [#3688](https://github.com/grafana/grafana/pull/3688)
+* **Templating**: Support for data source as variable, closes [#816](https://github.com/grafana/grafana/pull/816)
 
 ### Bug fixes
 * **InfluxDB 0.12**: Fixed issue templating and `show tag values` query only returning tags for first measurement,  fixes [#4726](https://github.com/grafana/grafana/issues/4726)
@@ -13,6 +23,15 @@
 * **grafana-cli**: Improve error message when failing to install plugins due to corrupt response, fixes [#4651](https://github.com/grafana/grafana/issues/4651)
 * **Singlestat**: Fixes prefix an postfix for gauges, fixes [#4812](https://github.com/grafana/grafana/issues/4812)
 * **Singlestat**: Fixes auto-refresh on change for some options, fixes [#4809](https://github.com/grafana/grafana/issues/4809)
+
+### Breaking changes
+**Data Source Query Editors**: Issue [#3900](https://github.com/grafana/grafana/issues/3900)
+
+Query editors have been updated to use the new form styles. External data source plugins needs to be
+updated to work. Sorry to introduce breaking change this late in beta phase. We wanted to get this change
+in before 3.0 stable is released so we don't have to break data sources in next release (3.1). If you are
+a data source plugin author and want help for how the new form styles work please ask for help in
+slack channel (link to slack channel in readme).
 
 # 3.0.0-beta5 (2016-04-15)
 
