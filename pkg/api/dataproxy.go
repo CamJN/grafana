@@ -18,6 +18,7 @@ import (
 	"github.com/grafana/grafana/pkg/log"
 	"github.com/grafana/grafana/pkg/api/cloudwatch"
 	"github.com/grafana/grafana/pkg/bus"
+	"github.com/grafana/grafana/pkg/metrics"
 	"github.com/grafana/grafana/pkg/middleware"
 	m "github.com/grafana/grafana/pkg/models"
 	"github.com/grafana/grafana/pkg/setting"
@@ -140,7 +141,10 @@ func All(vs []string, f func(string) bool) bool {
 }
 
 func ProxyDataSourceRequest(c *middleware.Context) {
+	c.TimeRequest(metrics.M_DataSource_ProxyReq_Timer)
+
 	ds, err := getDatasource(c.ParamsInt64(":id"), c.OrgId)
+
 	if err != nil {
 		c.JsonApiErr(500, "Unable to load datasource meta data", err)
 		return
