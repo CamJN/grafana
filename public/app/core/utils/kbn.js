@@ -1,8 +1,9 @@
 define([
   'jquery',
   'lodash',
+  'moment'
 ],
-function($, _) {
+function($, _, moment) {
   'use strict';
 
   var kbn = {};
@@ -396,6 +397,9 @@ function($, _) {
   kbn.valueFormats.rps  = kbn.formatBuilders.simpleCountUnit('rps');
   kbn.valueFormats.wps  = kbn.formatBuilders.simpleCountUnit('wps');
   kbn.valueFormats.iops = kbn.formatBuilders.simpleCountUnit('iops');
+  kbn.valueFormats.opm = kbn.formatBuilders.simpleCountUnit('opm');
+  kbn.valueFormats.rpm = kbn.formatBuilders.simpleCountUnit('rpm');
+  kbn.valueFormats.wpm = kbn.formatBuilders.simpleCountUnit('wpm');
 
   // Energy
   kbn.valueFormats.watt         = kbn.formatBuilders.decimalSIPrefix('W');
@@ -580,6 +584,18 @@ function($, _) {
     }
   };
 
+  kbn.toDuration = function(size, timeScale) {
+    return moment.duration(size, timeScale);
+  };
+
+  kbn.valueFormats.dtdurationms = function(size) {
+    return kbn.toDuration(size, 'ms').humanize();
+  };
+
+  kbn.valueFormats.dtdurations = function(size) {
+    return kbn.toDuration(size, 's').humanize();
+  };
+
   ///// FORMAT MENU /////
 
   kbn.getUnitFormats = function() {
@@ -616,6 +632,8 @@ function($, _) {
           {text: 'minutes (m)',       value: 'm'    },
           {text: 'hours (h)',         value: 'h'    },
           {text: 'days (d)',          value: 'd'    },
+          {text: 'duration (ms)',     value: 'dtdurationms' },
+          {text: 'duration (s)',      value: 'dtdurations' }
         ]
       },
       {
@@ -649,6 +667,9 @@ function($, _) {
           {text: 'reads/sec (rps)',     value: 'rps' },
           {text: 'writes/sec (wps)',    value: 'wps' },
           {text: 'I/O ops/sec (iops)',  value: 'iops'},
+          {text: 'ops/min (opm)',       value: 'opm' },
+          {text: 'reads/min (rpm)',     value: 'rpm' },
+          {text: 'writes/min (wpm)',    value: 'wpm' },
         ]
       },
       {

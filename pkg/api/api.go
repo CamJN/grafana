@@ -34,6 +34,7 @@ func Register(r *macaron.Macaron) {
 	r.Get("/org/", reqSignedIn, Index)
 	r.Get("/org/new", reqSignedIn, Index)
 	r.Get("/datasources/", reqSignedIn, Index)
+	r.Get("/datasources/new", reqSignedIn, Index)
 	r.Get("/datasources/edit/*", reqSignedIn, Index)
 	r.Get("/org/users/", reqSignedIn, Index)
 	r.Get("/org/apikeys/", reqSignedIn, Index)
@@ -55,6 +56,8 @@ func Register(r *macaron.Macaron) {
 
 	r.Get("/dashboard/*", reqSignedIn, Index)
 	r.Get("/dashboard-solo/*", reqSignedIn, Index)
+	r.Get("/import/dashboard", reqSignedIn, Index)
+	r.Get("/dashboards/*", reqSignedIn, Index)
 
 	r.Get("/playlists/", reqSignedIn, Index)
 	r.Get("/playlists/*", reqSignedIn, Index)
