@@ -44,6 +44,8 @@ module.exports = function(grunt) {
         outDir: 'dist/',
         options: {
           failOnTypeErrors: false,
+          target: 'es6',
+          noResolve: true
         },
       }
     },
