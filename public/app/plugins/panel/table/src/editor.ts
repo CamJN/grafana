@@ -118,6 +118,9 @@ export class TablePanelEditorCtrl {
     this.panel.styles.push(angular.copy(columnStyleDefaults));
   }
 
+  addRow() {
+  }
+
   removeColumnStyle(style) {
     this.panel.styles = _.without(this.panel.styles, style);
   }

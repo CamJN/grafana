@@ -21,6 +21,9 @@
 				<metric-segment segment="editor.addColumnSegment" get-options="editor.getColumnOptions()" on-change="editor.addColumn()"></metric-segment>
 			</div>
 		</div>
+		<button class="btn btn-inverse" style="margin-top: 20px" ng-click="editor.addRow()" ng-if="editor.panel.transform === 'data'">
+			Add row
+		</button>
 	</div>
 
 	<div class="section gf-form-group">
