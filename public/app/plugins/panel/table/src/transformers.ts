@@ -114,6 +114,47 @@ transformers['timeseries_aggregations'] = {
   }
 };
 
+transformers['data'] = {
+  description: 'Data',
+  getColumns: function(data) {
+    var data_names = [];
+    var i;
+    for (i = 0; i < data.length; i++) {
+      data_names.push({text: data[i].target, value: data[i].target});
+    }
+    return data_names;
+  },
+  transform: function(data, panel, model) {
+    var i;
+    var n;
+    var row = [];
+    for (i = 0; i < panel.columns.length; i++) {
+
+      var text = panel.columns[i].text;
+      model.columns.push({text: text});
+
+      var target;
+      for(n = 0; n < data.length; n++) {
+        if(data[n].target == text) {
+          target = data[n];
+          break;
+        }
+      }
+      if(typeof(target) === "undefined") {
+        row.push(NaN);
+        continue;
+      }
+      var series = new TimeSeries({
+        datapoints: target.datapoints,
+        alias: target.target,
+      });
+      series.getFlotPairs('connected');
+      row.push(series.stats['avg']);
+    }
+    model.rows.push(row);
+  }
+};
+
 transformers['annotations'] = {
   description: 'Annotations',
   getColumns: function() {
