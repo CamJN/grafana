@@ -9,8 +9,8 @@
       "url": "http://grafana.org"
 },
     "logos": {
-      "small": "img/icn-table-panel.svg",
-      "large": "img/icn-table-panel.svg"
+      "small": "src/img/icn-table-panel.svg",
+      "large": "src/img/icn-table-panel.svg"
     }
   }
 }
