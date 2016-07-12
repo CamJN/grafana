@@ -1,4 +1,14 @@
-# Table Panel -  Native Plugin
+# Table Panel - Extended
+
+This plugin is based on the native table plugin for grafana, but extends
+it with new features.
+
+## New Features
+
+- Allow creation of a custom 2D table where the data in each cell comes from
+  an arbitrary query (in development)
+
+## Original Table Plugin Readme Text
 
 The Table Panel is **included** with Grafana.
 
