@@ -8,6 +8,19 @@ it with new features.
 - Allow creation of a custom 2D table where the data in each cell comes from
   an arbitrary query (in development)
 
+## Building
+
+To build this plugin so that it can be used with grafana...
+
+1. [Install grunt](http://gruntjs.com/getting-started) from the npm package manager
+2. Change to the project's root directory
+3. Install project dependencies with ```npm install```
+4. Run Grunt with ```grunt```
+
+The source directory should then have the correct structure to be installed
+as a grafana plugin. The dist/ directory will contain the built project
+sources.
+
 ## Original Table Plugin Readme Text
 
 The Table Panel is **included** with Grafana.

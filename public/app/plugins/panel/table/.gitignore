@@ -1,0 +1,5 @@
+*~
+node_modules/
+dist/
+.tscache/
+src/.baseDir.ts
