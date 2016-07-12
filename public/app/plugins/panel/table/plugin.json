@@ -1,7 +1,7 @@
 {
   "type": "panel",
-  "name": "Table",
-  "id": "table",
+  "name": "Extended Table",
+  "id": "extended_table",
 
   "info": {
     "author": {
