@@ -125,33 +125,42 @@ transformers['data'] = {
     return data_names;
   },
   transform: function(data, panel, model) {
-    var i;
-    var n;
-    var row = [];
-    for (i = 0; i < panel.column_heads.length; i++) {
+    var x;
+    var y;
 
-      var text = panel.column_heads[i].text;
+    var row_len = function(row){return row.columns.length};
+    var height  = panel.rows.length;
+    var width   = _.max(panel.rows, row_len).columns.length;
+
+    for (x = 0; x < width; x++) {
+      var text;
+      if(x < panel.column_heads.length) {
+        text = panel.column_heads[x].text;
+      } else {
+        text = "NO NAME";
+      }
       model.columns.push({text: text});
-
-      var target;
-      for(n = 0; n < data.length; n++) {
-        if(data[n].target == text) {
-          target = data[n];
-          break;
-        }
-      }
-      if(typeof(target) === "undefined") {
-        row.push(NaN);
-        continue;
-      }
-      var series = new TimeSeries({
-        datapoints: target.datapoints,
-        alias: target.target,
-      });
-      series.getFlotPairs('connected');
-      row.push(series.stats['avg']);
     }
-    model.rows.push(row);
+
+    for(y = height - 1; y >= 0; y--) {
+      var model_row = [];
+      var row = panel.rows[y];
+      for(x = 0; x < width; x++) {
+          if(x >= row_len(row)) {
+            model_row.push(void(0));
+          } else {
+            var text   = row.columns[x].text;
+            var target = _.find(data, function(d){return d.target == text});
+            var series = new TimeSeries({
+                datapoints: target.datapoints,
+                alias: target.target,
+            });
+            series.getFlotPairs('connected');
+            model_row.push(series.stats['avg']);
+          }
+      }
+      model.rows.push(model_row);
+    }
   }
 };
 
