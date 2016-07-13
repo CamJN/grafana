@@ -10,7 +10,10 @@ var transformers = {};
 
 transformers['timeseries_to_rows'] = {
   description: 'Time series to rows',
-  prep_panel: function(panel) {panel.en_sort_toggle = true;},
+  prep_panel: function(panel) {
+    panel.en_sort_toggle = true;
+    panel.en_column_names = false;
+  },
   getColumns: function() {
     return [];
   },
@@ -33,7 +36,10 @@ transformers['timeseries_to_rows'] = {
 
 transformers['timeseries_to_columns'] = {
   description: 'Time series to columns',
-  prep_panel: function(panel) {panel.en_sort_toggle = true;},
+  prep_panel: function(panel) {
+    panel.en_sort_toggle = true;
+    panel.en_column_names = false;
+  },
   getColumns: function() {
     return [];
   },
@@ -76,7 +82,10 @@ transformers['timeseries_to_columns'] = {
 
 transformers['timeseries_aggregations'] = {
   description: 'Time series aggregations',
-  prep_panel: function(panel) {panel.en_sort_toggle = true;},
+  prep_panel: function(panel) {
+    panel.en_sort_toggle = true;
+    panel.en_column_names = false;
+  },
   getColumns: function() {
     return [
       {text: 'Avg', value: 'avg'},
@@ -123,6 +132,7 @@ transformers['data'] = {
     panel.en_sort_toggle = false;
     panel.sort.col  = null;
     panel.sort.desc = true;
+    panel.en_column_names = true;
   },
   getColumns: function(data) {
     var data_names = [{text: 'EMPTY', value: 'EMPTY'}];
@@ -142,7 +152,9 @@ transformers['data'] = {
 
     for (x = 0; x < width; x++) {
       var text;
-      if(x < panel.column_heads.length) {
+      if(x < panel.column_names.length) {
+        text = panel.column_names[x];
+      } else if(x < panel.column_heads.length) {
         text = panel.column_heads[x].text;
       } else {
         text = "NO NAME";
@@ -176,7 +188,10 @@ transformers['data'] = {
 
 transformers['annotations'] = {
   description: 'Annotations',
-  prep_panel: function(panel) {panel.en_sort_toggle = true;},
+  prep_panel: function(panel) {
+    panel.en_sort_toggle = true;
+    panel.en_column_names = false;
+  },
   getColumns: function() {
     return [];
   },
@@ -199,7 +214,10 @@ transformers['annotations'] = {
 
 transformers['table'] = {
   description: 'Table',
-  prep_panel: function(panel) {panel.en_sort_toggle = true;},
+  prep_panel: function(panel) {
+    panel.en_sort_toggle = true;
+    panel.en_column_names = false;
+  },
   getColumns: function(data) {
     if (!data || data.length === 0) {
       return [];
@@ -221,7 +239,10 @@ transformers['table'] = {
 
 transformers['json'] = {
   description: 'JSON Data',
-  prep_panel: function(panel) {panel.en_sort_toggle = true;},
+  prep_panel: function(panel) {
+    panel.en_sort_toggle = true;
+    panel.en_column_names = false;
+  },
   getColumns: function(data) {
     if (!data || data.length === 0) {
       return [];

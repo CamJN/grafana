@@ -87,6 +87,7 @@ export class TablePanelEditorCtrl {
   transformChanged() {
     this.panel.rows = [{columns: []}];
     this.panel.column_heads = this.panel.rows[0].columns;
+    this.panel.column_names = [];
     transformPrepPanel(this.panel);
     this.render();
   }
