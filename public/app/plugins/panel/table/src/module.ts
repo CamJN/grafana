@@ -38,7 +38,7 @@ class TablePanelCtrl extends MetricsPanelCtrl {
         thresholds: [],
       }
     ],
-    columns: [],
+    rows: [{columns: []}],
     scroll: true,
     fontSize: '100%',
     sort: {col: 0, desc: true},
@@ -54,12 +54,11 @@ class TablePanelCtrl extends MetricsPanelCtrl {
       this.panel.column_heads = this.panel.fields;
       delete this.panel.column_heads;
       delete this.panel.fields;
-      this.panel.rows = [{columns: []}];
-      this.panel.column_heads = this.panel.rows[0].columns;
     }
 
     _.defaults(this.panel, this.panelDefaults);
 
+    this.panel.column_heads = this.panel.rows[0].columns;
     this.events.on('data-received', this.onDataReceived.bind(this));
     this.events.on('data-error', this.onDataError.bind(this));
     this.events.on('data-snapshot-load', this.onDataReceived.bind(this));
