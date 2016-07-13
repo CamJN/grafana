@@ -123,6 +123,13 @@ export class TablePanelEditorCtrl {
     this.panel.rows.push({columns: []});
   }
 
+  removeRow(row) {
+    if(this.panel.rows.length === 1) {
+      return;
+    }
+    this.panel.rows = _.without(this.panel.rows, row);
+  }
+
   removeColumnStyle(style) {
     this.panel.styles = _.without(this.panel.styles, style);
   }

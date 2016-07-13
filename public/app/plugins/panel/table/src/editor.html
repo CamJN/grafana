@@ -8,6 +8,9 @@
       </div>
     </div>
     <div class="gf-form-inline" ng-repeat="row in editor.panel.rows">
+      <label class="gf-form-label" ng-if="editor.panel.rows.length > 1">
+				<i class="fa fa-remove pointer" ng-click="editor.removeRow(row)"></i>
+      </label>
       <div class="gf-form">
         <label class="gf-form-label width-10">Columns</label>
       </div>
