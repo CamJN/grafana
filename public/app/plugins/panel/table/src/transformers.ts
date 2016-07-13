@@ -125,7 +125,7 @@ transformers['data'] = {
     panel.sort.desc = true;
   },
   getColumns: function(data) {
-    var data_names = [];
+    var data_names = [{text: 'EMPTY', value: 'EMPTY'}];
     var i;
     for (i = 0; i < data.length; i++) {
       data_names.push({text: data[i].target, value: data[i].target});
@@ -155,6 +155,8 @@ transformers['data'] = {
       var row = panel.rows[y];
       for(x = 0; x < width; x++) {
           if(x >= row_len(row)) {
+            model_row.push(void(0));
+          } else if(row.columns[x].text === 'EMPTY') {
             model_row.push(void(0));
           } else {
             var text   = row.columns[x].text;
