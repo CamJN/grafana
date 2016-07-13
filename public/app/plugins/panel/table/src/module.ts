@@ -6,7 +6,7 @@ import $ from 'jquery';
 import moment from 'moment';
 import * as FileExport from 'app/core/utils/file_export';
 import {MetricsPanelCtrl} from 'app/plugins/sdk';
-import {transformDataToTable} from './transformers';
+import {transformDataToTable, transformPrepPanel} from './transformers';
 import {tablePanelEditor} from './editor';
 import {TableRenderer} from './renderer';
 
@@ -42,6 +42,7 @@ class TablePanelCtrl extends MetricsPanelCtrl {
     scroll: true,
     fontSize: '100%',
     sort: {col: 0, desc: true},
+    en_sort_toggle: true
   };
 
   /** @ngInject */
@@ -57,8 +58,9 @@ class TablePanelCtrl extends MetricsPanelCtrl {
     }
 
     _.defaults(this.panel, this.panelDefaults);
-
     this.panel.column_heads = this.panel.rows[0].columns;
+    transformPrepPanel(this.panel);
+
     this.events.on('data-received', this.onDataReceived.bind(this));
     this.events.on('data-error', this.onDataError.bind(this));
     this.events.on('data-snapshot-load', this.onDataReceived.bind(this));
@@ -122,6 +124,10 @@ class TablePanelCtrl extends MetricsPanelCtrl {
   }
 
   toggleColumnSort(col, colIndex) {
+
+    if(!this.panel.en_sort_toggle) {
+      return;
+    }
     // remove sort flag from current column
     if (this.table.columns[this.panel.sort.col]) {
       this.table.columns[this.panel.sort.col].sort = false;

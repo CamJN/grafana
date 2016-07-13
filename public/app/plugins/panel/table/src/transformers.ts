@@ -10,6 +10,7 @@ var transformers = {};
 
 transformers['timeseries_to_rows'] = {
   description: 'Time series to rows',
+  prep_panel: function(panel) {panel.en_sort_toggle = true;},
   getColumns: function() {
     return [];
   },
@@ -32,6 +33,7 @@ transformers['timeseries_to_rows'] = {
 
 transformers['timeseries_to_columns'] = {
   description: 'Time series to columns',
+  prep_panel: function(panel) {panel.en_sort_toggle = true;},
   getColumns: function() {
     return [];
   },
@@ -74,6 +76,7 @@ transformers['timeseries_to_columns'] = {
 
 transformers['timeseries_aggregations'] = {
   description: 'Time series aggregations',
+  prep_panel: function(panel) {panel.en_sort_toggle = true;},
   getColumns: function() {
     return [
       {text: 'Avg', value: 'avg'},
@@ -116,6 +119,11 @@ transformers['timeseries_aggregations'] = {
 
 transformers['data'] = {
   description: 'Data',
+  prep_panel: function(panel) {
+    panel.en_sort_toggle = false;
+    panel.sort.col  = null;
+    panel.sort.desc = true;
+  },
   getColumns: function(data) {
     var data_names = [];
     var i;
@@ -166,6 +174,7 @@ transformers['data'] = {
 
 transformers['annotations'] = {
   description: 'Annotations',
+  prep_panel: function(panel) {panel.en_sort_toggle = true;},
   getColumns: function() {
     return [];
   },
@@ -188,6 +197,7 @@ transformers['annotations'] = {
 
 transformers['table'] = {
   description: 'Table',
+  prep_panel: function(panel) {panel.en_sort_toggle = true;},
   getColumns: function(data) {
     if (!data || data.length === 0) {
       return [];
@@ -209,6 +219,7 @@ transformers['table'] = {
 
 transformers['json'] = {
   description: 'JSON Data',
+  prep_panel: function(panel) {panel.en_sort_toggle = true;},
   getColumns: function(data) {
     if (!data || data.length === 0) {
       return [];
@@ -284,4 +295,13 @@ function transformDataToTable(data, panel) {
   return model;
 }
 
-export {transformers, transformDataToTable}
+function transformPrepPanel(panel) {
+  var transformer = transformers[panel.transform];
+  if (!transformer) {
+    throw {message: 'Transformer ' + panel.transformer + ' not found'};
+  }
+
+  transformer.prep_panel(panel);
+}
+
+export {transformers, transformDataToTable, transformPrepPanel}

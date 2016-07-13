@@ -6,7 +6,7 @@ import $ from 'jquery';
 import moment from 'moment';
 import angular from 'angular';
 
-import {transformers} from './transformers';
+import {transformers, transformPrepPanel} from './transformers';
 import kbn from 'app/core/utils/kbn';
 
 export class TablePanelEditorCtrl {
@@ -87,6 +87,7 @@ export class TablePanelEditorCtrl {
   transformChanged() {
     this.panel.rows = [{columns: []}];
     this.panel.column_heads = this.panel.rows[0].columns;
+    transformPrepPanel(this.panel);
     this.render();
   }
 
