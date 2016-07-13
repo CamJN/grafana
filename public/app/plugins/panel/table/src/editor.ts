@@ -120,6 +120,7 @@ export class TablePanelEditorCtrl {
   }
 
   addRow() {
+    this.panel.rows.push({columns: []});
   }
 
   removeColumnStyle(style) {

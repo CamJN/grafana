@@ -7,7 +7,7 @@
         <select class="gf-form-input" ng-model="editor.panel.transform" ng-options="k as v.description for (k, v) in editor.transformers" ng-change="editor.transformChanged()"></select>
       </div>
     </div>
-    <div class="gf-form-inline">
+    <div class="gf-form-inline" ng-repeat="row in editor.panel.rows">
       <div class="gf-form">
         <label class="gf-form-label width-10">Columns</label>
       </div>
