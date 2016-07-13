@@ -75,7 +75,7 @@ export class TablePanelEditorCtrl {
     var column = _.find(columns, {text: this.addColumnSegment.value});
 
     if (column) {
-      this.panel.columns.push(column);
+      this.panel.column_heads.push(column);
       this.render();
     }
 
@@ -85,7 +85,8 @@ export class TablePanelEditorCtrl {
   }
 
   transformChanged() {
-    this.panel.columns = [];
+    this.panel.rows = [{columns: []}];
+    this.panel.column_heads = this.panel.rows[0].columns;
     this.render();
   }
 
@@ -94,7 +95,7 @@ export class TablePanelEditorCtrl {
   }
 
   removeColumn(column) {
-    this.panel.columns = _.without(this.panel.columns, column);
+    this.panel.column_heads = _.without(this.panel.column_heads, column);
     this.panelCtrl.render();
   }
 

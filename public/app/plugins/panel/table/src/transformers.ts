@@ -88,12 +88,12 @@ transformers['timeseries_aggregations'] = {
     var i, y;
     model.columns.push({text: 'Metric'});
 
-    if (panel.columns.length === 0) {
-      panel.columns.push({text: 'Avg', value: 'avg'});
+    if (panel.column_heads.length === 0) {
+      panel.column_heads.push({text: 'Avg', value: 'avg'});
     }
 
-    for (i = 0; i < panel.columns.length; i++) {
-      model.columns.push({text: panel.columns[i].text});
+    for (i = 0; i < panel.column_heads.length; i++) {
+      model.columns.push({text: panel.column_heads[i].text});
     }
 
     for (i = 0; i < data.length; i++) {
@@ -105,8 +105,8 @@ transformers['timeseries_aggregations'] = {
       series.getFlotPairs('connected');
       var cells = [series.alias];
 
-      for (y = 0; y < panel.columns.length; y++) {
-        cells.push(series.stats[panel.columns[y].value]);
+      for (y = 0; y < panel.column_heads.length; y++) {
+        cells.push(series.stats[panel.column_heads[y].value]);
       }
 
       model.rows.push(cells);
@@ -128,9 +128,9 @@ transformers['data'] = {
     var i;
     var n;
     var row = [];
-    for (i = 0; i < panel.columns.length; i++) {
+    for (i = 0; i < panel.column_heads.length; i++) {
 
-      var text = panel.columns[i].text;
+      var text = panel.column_heads[i].text;
       model.columns.push({text: text});
 
       var target;
@@ -229,8 +229,8 @@ transformers['json'] = {
   },
   transform: function(data, panel, model) {
     var i, y, z;
-    for (i = 0; i < panel.columns.length; i++) {
-      model.columns.push({text: panel.columns[i].text});
+    for (i = 0; i < panel.column_heads.length; i++) {
+      model.columns.push({text: panel.column_heads[i].text});
     }
 
     if (model.columns.length === 0) {
@@ -244,10 +244,10 @@ transformers['json'] = {
         var dp = series.datapoints[y];
         var values = [];
 
-        if (_.isObject(dp) && panel.columns.length > 0) {
+        if (_.isObject(dp) && panel.column_heads.length > 0) {
           var flattened = flatten(dp, null);
-          for (z = 0; z < panel.columns.length; z++) {
-            values.push(flattened[panel.columns[z].value]);
+          for (z = 0; z < panel.column_heads.length; z++) {
+            values.push(flattened[panel.column_heads[z].value]);
           }
         } else {
           values.push(JSON.stringify(dp));

@@ -50,9 +50,9 @@ class TablePanelCtrl extends MetricsPanelCtrl {
     this.pageIndex = 0;
 
     if (this.panel.styles === void 0) {
-      this.panel.styles = this.panel.columns;
-      this.panel.columns = this.panel.fields;
-      delete this.panel.columns;
+      this.panel.styles = this.panel.column_heads;
+      this.panel.column_heads = this.panel.fields;
+      delete this.panel.column_heads;
       delete this.panel.fields;
     }
 
