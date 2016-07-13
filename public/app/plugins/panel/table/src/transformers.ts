@@ -142,7 +142,7 @@ transformers['data'] = {
       model.columns.push({text: text});
     }
 
-    for(y = height - 1; y >= 0; y--) {
+    for(y = 0; y < height; y++) {
       var model_row = [];
       var row = panel.rows[y];
       for(x = 0; x < width; x++) {
