@@ -14,14 +14,14 @@
       <div class="gf-form">
         <label class="gf-form-label width-10">Columns</label>
       </div>
-			<div class="gf-form" ng-repeat="column in editor.panel.column_heads">
+			<div class="gf-form" ng-repeat="column in row.columns">
 				<label class="gf-form-label">
 					<i class="pointer fa fa-remove" ng-click="editor.removeColumn(column)"></i>
 					<span>{{column.text}}</span>
 				</label>
 			</div>
 			<div class="gf-form">
-				<metric-segment segment="editor.addColumnSegment" get-options="editor.getColumnOptions()" on-change="editor.addColumn()"></metric-segment>
+				<metric-segment segment="editor.addColumnSegment" get-options="editor.getColumnOptions()" on-change="editor.addColumn(row)"></metric-segment>
 			</div>
 		</div>
 		<button class="btn btn-inverse" style="margin-top: 20px" ng-click="editor.addRow()" ng-if="editor.panel.transform === 'data'">

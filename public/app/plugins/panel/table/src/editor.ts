@@ -70,12 +70,12 @@ export class TablePanelEditorCtrl {
     return this.$q.when(segments);
   }
 
-  addColumn() {
+  addColumn(row) {
     var columns = transformers[this.panel.transform].getColumns(this.panelCtrl.dataRaw);
     var column = _.find(columns, {text: this.addColumnSegment.value});
 
     if (column) {
-      this.panel.column_heads.push(column);
+      row.columns.push(column);
       this.render();
     }
 
@@ -95,7 +95,19 @@ export class TablePanelEditorCtrl {
   }
 
   removeColumn(column) {
-    this.panel.column_heads = _.without(this.panel.column_heads, column);
+    var i;
+    var n;
+
+    for(i = 0; i < this.panel.rows.length; i++) {
+      var row     = this.panel.rows[i];
+      var columns = row.columns;
+      var index   = _.indexOf(columns, column);
+
+      if(index != -1) {
+        columns.splice(index, 1);
+        break;
+      }
+    }
     this.panelCtrl.render();
   }
 
@@ -121,6 +133,7 @@ export class TablePanelEditorCtrl {
 
   addRow() {
     this.panel.rows.push({columns: []});
+    this.panelCtrl.render();
   }
 
   removeRow(row) {
@@ -128,6 +141,8 @@ export class TablePanelEditorCtrl {
       return;
     }
     this.panel.rows = _.without(this.panel.rows, row);
+    this.panel.column_heads = this.panel.rows[0].columns;
+    this.panelCtrl.render();
   }
 
   removeColumnStyle(style) {
