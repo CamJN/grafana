@@ -54,6 +54,8 @@ class TablePanelCtrl extends MetricsPanelCtrl {
       this.panel.column_heads = this.panel.fields;
       delete this.panel.column_heads;
       delete this.panel.fields;
+      this.panel.rows = [{columns: []}];
+      this.panel.column_heads = this.panel.rows[0].columns;
     }
 
     _.defaults(this.panel, this.panelDefaults);
