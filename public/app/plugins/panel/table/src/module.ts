@@ -38,13 +38,14 @@ class TablePanelCtrl extends MetricsPanelCtrl {
         thresholds: [],
       }
     ],
-    rows: [{columns: []}],
+    rows: [{columns: [], name: ''}],
     column_names: [],
     scroll: true,
     fontSize: '100%',
     sort: {col: 0, desc: true},
     en_sort_toggle: true,
-    en_column_names: false
+    en_column_names: false,
+    en_row_names: false
   };
 
   /** @ngInject */

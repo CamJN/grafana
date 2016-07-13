@@ -13,6 +13,7 @@ transformers['timeseries_to_rows'] = {
   prep_panel: function(panel) {
     panel.en_sort_toggle = true;
     panel.en_column_names = false;
+    panel.en_row_names = false;
   },
   getColumns: function() {
     return [];
@@ -39,6 +40,7 @@ transformers['timeseries_to_columns'] = {
   prep_panel: function(panel) {
     panel.en_sort_toggle = true;
     panel.en_column_names = false;
+    panel.en_row_names = false;
   },
   getColumns: function() {
     return [];
@@ -85,6 +87,7 @@ transformers['timeseries_aggregations'] = {
   prep_panel: function(panel) {
     panel.en_sort_toggle = true;
     panel.en_column_names = false;
+    panel.en_row_names = false;
   },
   getColumns: function() {
     return [
@@ -133,6 +136,7 @@ transformers['data'] = {
     panel.sort.col  = null;
     panel.sort.desc = true;
     panel.en_column_names = true;
+    panel.en_row_names = true;
   },
   getColumns: function(data) {
     var data_names = [{text: 'EMPTY', value: 'EMPTY'}];
@@ -182,6 +186,7 @@ transformers['data'] = {
           }
       }
       model.rows.push(model_row);
+      model.row_names.push(row.name);
     }
   }
 };
@@ -191,6 +196,7 @@ transformers['annotations'] = {
   prep_panel: function(panel) {
     panel.en_sort_toggle = true;
     panel.en_column_names = false;
+    panel.en_row_names = false;
   },
   getColumns: function() {
     return [];
@@ -217,6 +223,7 @@ transformers['table'] = {
   prep_panel: function(panel) {
     panel.en_sort_toggle = true;
     panel.en_column_names = false;
+    panel.en_row_names = false;
   },
   getColumns: function(data) {
     if (!data || data.length === 0) {
@@ -242,6 +249,7 @@ transformers['json'] = {
   prep_panel: function(panel) {
     panel.en_sort_toggle = true;
     panel.en_column_names = false;
+    panel.en_row_names = false;
   },
   getColumns: function(data) {
     if (!data || data.length === 0) {
@@ -304,6 +312,8 @@ transformers['json'] = {
 
 function transformDataToTable(data, panel) {
   var model = new TableModel();
+
+  model.row_names = [];
 
   if (!data || data.length === 0) {
     return model;

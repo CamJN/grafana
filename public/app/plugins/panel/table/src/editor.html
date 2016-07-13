@@ -20,6 +20,13 @@
       <label class="gf-form-label" ng-if="editor.panel.rows.length > 1">
 				<i class="fa fa-remove pointer" ng-click="editor.removeRow(row)"></i>
       </label>
+      <label class="gf-form-label" ng-if="editor.panel.en_row_names">
+				Row
+			</label>
+			<input type="text" class="input-small gf-form-input"
+						 style="width: 110px" ng-model="row.name"
+             ng-if="editor.panel.en_row_names"
+						 ng-blur="editor.render()"></input>
       <div class="gf-form">
         <label class="gf-form-label width-10">Columns</label>
       </div>

@@ -85,7 +85,7 @@ export class TablePanelEditorCtrl {
   }
 
   transformChanged() {
-    this.panel.rows = [{columns: []}];
+    this.panel.rows = [{columns: [], name: ''}];
     this.panel.column_heads = this.panel.rows[0].columns;
     this.panel.column_names = [];
     transformPrepPanel(this.panel);
@@ -134,7 +134,7 @@ export class TablePanelEditorCtrl {
   }
 
   addRow() {
-    this.panel.rows.push({columns: []});
+    this.panel.rows.push({columns: [], name: ''});
     this.panelCtrl.render();
   }
 

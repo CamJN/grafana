@@ -149,6 +149,13 @@ export class TableRenderer {
       let row = this.table.rows[y];
       let cellHtml = '';
       let rowStyle = '';
+      let name     = this.table.row_names[y];
+
+      if(typeof(name) == 'undefined') {
+      	      name = '';
+      }
+
+      cellHtml += '<th style="color: #33B5E5">' + name + '</td>'
       for (var i = 0; i < this.table.columns.length; i++) {
         cellHtml += this.renderCell(i, row[i], y === startPos);
       }
