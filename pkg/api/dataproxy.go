@@ -150,6 +150,11 @@ func ProxyDataSourceRequest(c *middleware.Context) {
 		return
 	}
 
+	if ds.Type == m.DS_CLOUDWATCH {
+		cloudwatch.HandleRequest(c, ds)
+		return
+	}
+
 	targetUrl, _ := url.Parse(ds.Url)
 	if len(setting.DataProxyWhiteList) > 0 {
 		if _, exists := setting.DataProxyWhiteList[targetUrl.Host]; !exists {
@@ -158,9 +163,7 @@ func ProxyDataSourceRequest(c *middleware.Context) {
 		}
 	}
 
-	if ds.Type == m.DS_CLOUDWATCH {
-		cloudwatch.HandleRequest(c, ds)
-	}else if ds.Type == m.DS_INFLUXDB {
+	if ds.Type == m.DS_INFLUXDB {
 		proxyPath := c.Params("*")
 		proxy := NewReverseProxy(ds, proxyPath, targetUrl)
 		proxy.Transport = dataProxyTransport

@@ -10,10 +10,6 @@ export class DynamicDashboardSrv {
   iteration: number;
   dashboard: any;
 
-  constructor() {
-    this.iteration = new Date().getTime();
-  }
-
   init(dashboard) {
     if (dashboard.snapshot) { return; }
     this.process(dashboard, {});
@@ -21,14 +17,14 @@ export class DynamicDashboardSrv {
 
   update(dashboard) {
     if (dashboard.snapshot) { return; }
-
-    this.iteration = this.iteration + 1;
     this.process(dashboard, {});
   }
 
   process(dashboard, options) {
     if (dashboard.templating.list.length === 0) { return; }
+
     this.dashboard = dashboard;
+    this.iteration = (this.iteration || new Date().getTime()) + 1;
 
     var cleanUpOnly = options.cleanUpOnly;
 
@@ -177,7 +173,7 @@ export class DynamicDashboardSrv {
 
     _.each(selected, (option, index) => {
       var copy = this.getPanelClone(panel, row, index);
-      copy.span = Math.max(12 / selected.length, panel.minSpan);
+      copy.span = Math.max(12 / selected.length, panel.minSpan || 4);
       copy.scopedVars = copy.scopedVars || {};
       copy.scopedVars[variable.name] = option;
     });
