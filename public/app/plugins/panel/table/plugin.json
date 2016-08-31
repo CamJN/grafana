@@ -7,11 +7,19 @@
     "author": {
       "name": "Grafana Project",
       "url": "http://grafana.org"
-},
+    },
     "logos": {
       "small": "src/img/icn-table-panel.svg",
       "large": "src/img/icn-table-panel.svg"
-    }
+    },
+    "links": [
+      {
+        "name": "Source",
+        "url": "https://bitbucket.org/scanimetrics/grafana-extended-table"
+      }
+    ],
+    "version": "0.2.0",
+    "updated": "2016-08-31"
   }
 }
 
