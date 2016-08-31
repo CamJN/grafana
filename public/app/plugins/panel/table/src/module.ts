@@ -37,6 +37,7 @@ class TablePanelCtrl extends MetricsPanelCtrl {
         colorType: 'discrete',
         pattern: '/.*/',
         thresholds: [],
+        legendOn: false
       }
     ],
     rows: [{columns: [], name: ''}],
@@ -46,7 +47,8 @@ class TablePanelCtrl extends MetricsPanelCtrl {
     sort: {col: 0, desc: true},
     en_sort_toggle: true,
     en_column_names: false,
-    en_row_names: false
+    en_row_names: false,
+    showLegend: false
   };
 
   /** @ngInject */
@@ -171,8 +173,7 @@ class TablePanelCtrl extends MetricsPanelCtrl {
       return (panelHeight - 31) + 'px';
     }
 
-    function appendTableRows(tbodyElem) {
-      var renderer = new TableRenderer(panel, data, ctrl.dashboard.isTimezoneUtc(), ctrl.$sanitize);
+    function appendTableRows(tbodyElem, renderer) {
       tbodyElem.empty();
       tbodyElem.html(renderer.render(ctrl.pageIndex));
     }
@@ -211,14 +212,19 @@ class TablePanelCtrl extends MetricsPanelCtrl {
       var rootElem = elem.find('.table-panel-scroll');
       var tbodyElem = elem.find('tbody');
       var footerElem = elem.find('.table-panel-footer');
+      var legend     = elem.find('#gradient-legend');
+      var renderer = new TableRenderer(
+        panel, data, ctrl.dashboard.isTimezoneUtc(), ctrl.$sanitize
+      );
 
       elem.css({'font-size': panel.fontSize});
       panelElem.addClass('table-panel-wrapper');
 
-      appendTableRows(tbodyElem);
+      appendTableRows(tbodyElem, renderer);
       appendPaginationControls(footerElem);
 
       rootElem.css({'max-height': panel.scroll ? getTableHeight() : '' });
+      renderer.render_legend(legend[0]);
     }
 
     elem.on('click', '.table-panel-page-link', switchPage);

@@ -3,7 +3,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import kbn from 'app/core/utils/kbn';
-import {multigrad_color} from './heatcolors';
+import {multigrad_color, fill_gradient_legend} from './heatcolors';
 
 export class TableRenderer {
   formaters: any[];
@@ -205,5 +205,23 @@ export class TableRenderer {
         columns: this.table.columns,
         rows: rows,
     };
+  }
+
+  render_legend(canvas) {
+    var colors;
+    var styles = this.panel.styles;
+    for(var i = 0; i < styles.length; i++) {
+      if(styles[i].colorType == 'gradient' && styles[i].legendOn) {
+        colors = styles[i].colors;
+        break;
+      }
+    }
+    if(typeof(colors) === 'undefined') {
+      this.panel.showLegend = false;
+      return;
+    }
+
+    fill_gradient_legend(colors, canvas);
+    this.panel.showLegend = true;
   }
 }

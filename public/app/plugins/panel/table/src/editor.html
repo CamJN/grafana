@@ -157,9 +157,12 @@
           </span>
         </div>
         <div class="gf-form gf-form--grow">
-          <div class="gf-form-label gf-form-label--grow">
+          <div class="gf-form-label gf-form-label--grow" ng-class="style.colorType === 'gradient' ? '' : 'last'">
             <a class="pointer" ng-click="editor.invertColorOrder($index)">Invert</a>
           </div>
+				  <div class="gf-form last" ng-if="style.colorType === 'gradient'">
+				    <editor-checkbox text="Legend" model="style.legendOn" change="editor.render()"></editor-checkbox>
+				  </div>
         </div>
       </div>
 

@@ -133,6 +133,7 @@ export class TablePanelEditorCtrl {
       pattern: '/.*/',
       dateFormat: 'YYYY-MM-DD HH:mm:ss',
       thresholds: [],
+      legendOn: false
     };
 
     this.panel.styles.push(angular.copy(columnStyleDefaults));

@@ -77,7 +77,7 @@ function multigrad_color(colors, value, max_value, min_value)
 
 function fill_gradient_legend(colors, canvas, horizontal)
 {
-  if(typeof(horizontal) == 'undefined') {
+  if(typeof(horizontal) === 'undefined') {
     horizontal = true;
   }
   var ctx  = canvas.getContext("2d");
