@@ -6,7 +6,8 @@ it with new features.
 ## New Features
 
 - Allow creation of a custom 2D table where the data in each cell comes from
-  an arbitrary query (in development)
+  an arbitrary query.
+- Allow color coding the table using a gradient instead of a threshold.
 
 ## Building
 
