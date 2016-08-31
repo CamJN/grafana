@@ -48,7 +48,9 @@ class TablePanelCtrl extends MetricsPanelCtrl {
     en_sort_toggle: true,
     en_column_names: false,
     en_row_names: false,
-    showLegend: false
+    showLegend: false,
+    legendLeft: 0,
+    legendRight: 0
   };
 
   /** @ngInject */
@@ -210,7 +212,7 @@ class TablePanelCtrl extends MetricsPanelCtrl {
     function renderPanel() {
       var panelElem = elem.parents('.panel');
       var rootElem = elem.find('.table-panel-scroll');
-      var tbodyElem = elem.find('tbody');
+      var tbodyElem = rootElem.find('.table-panel-body');
       var footerElem = elem.find('.table-panel-footer');
       var legend     = elem.find('#gradient-legend');
       var renderer = new TableRenderer(

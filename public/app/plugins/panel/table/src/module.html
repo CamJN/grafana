@@ -16,16 +16,26 @@
 					</th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody class="table-panel-body">
 			</tbody>
 		</table>
 	</div>
 </div>
-<div style="width: 100%">
+<div style="width: 100%" ng-show="ctrl.panel.showLegend">
   <canvas
-          id="gradient-legend" ng-show="ctrl.panel.showLegend"
+          id="gradient-legend"
           style="width: 100%; height: 15px">
   </canvas>
+  <table style="width: 100%">
+    <tr>
+      <td style="padding: 0px; text-align: left">
+        {{ctrl.panel.legendLeft}}
+      </td>
+      <td style="padding: 0px; text-align: right">
+        {{ctrl.panel.legendRight}}
+      </td>
+    </tr>
+  </table>
 </div>
 <div class="table-panel-footer">
 </div>

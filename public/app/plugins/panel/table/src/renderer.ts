@@ -208,20 +208,25 @@ export class TableRenderer {
   }
 
   render_legend(canvas) {
-    var colors;
+    var selected;
     var styles = this.panel.styles;
+
     for(var i = 0; i < styles.length; i++) {
       if(styles[i].colorType == 'gradient' && styles[i].legendOn) {
-        colors = styles[i].colors;
+        selected = styles[i];
         break;
       }
     }
-    if(typeof(colors) === 'undefined') {
+    if(typeof(selected) === 'undefined') {
       this.panel.showLegend = false;
       return;
     }
 
-    fill_gradient_legend(colors, canvas);
+    fill_gradient_legend(selected.colors, canvas);
+    if(selected.thresholds.length >= 2) {
+      this.panel.legendLeft  = selected.thresholds[0];
+      this.panel.legendRight = selected.thresholds[1];
+    }
     this.panel.showLegend = true;
   }
 }
