@@ -35,6 +35,10 @@ export class TablePanelEditorCtrl {
       {text: 'Value', value: 'value'},
       {text: 'Row', value: 'row'},
     ];
+    this.colorTypes = [
+        {text: 'Discrete', value: 'discrete'},
+        {text: 'Gradient', value: 'gradient'}
+    ];
     this.columnTypes = [
       {text: 'Number', value: 'number'},
       {text: 'String', value: 'string'},
@@ -123,8 +127,9 @@ export class TablePanelEditorCtrl {
       unit: 'short',
       type: 'number',
       decimals: 2,
-      colors: ["rgba(245, 54, 54, 0.9)", "rgba(237, 129, 40, 0.89)", "rgba(50, 172, 45, 0.97)"],
+      colors: ["rgba(245, 54, 54, 0.9)", "rgba(237, 129, 40, 0.89)", "rgba(50, 172, 45, 0.97)", '#00FFFF', '#0000FF'],
       colorMode: null,
+      colorType: 'discrete',
       pattern: '/.*/',
       dateFormat: 'YYYY-MM-DD HH:mm:ss',
       thresholds: [],
@@ -152,10 +157,16 @@ export class TablePanelEditorCtrl {
   }
 
   invertColorOrder(index) {
-    var ref = this.panel.styles[index].colors;
-    var copy = ref[0];
-    ref[0] = ref[2];
-    ref[2] = copy;
+    var style = this.panel.styles[index];
+    var ref   = style.colors;
+    var len   = style.colorType === 'discrete' ? 3 : 5;
+
+    for(var i = 0; i < Math.floor(len / 2); i += 1) {
+      var tmp = ref[i];
+      ref[i] = ref[len - i - 1];
+      ref[len - i - 1] = tmp;
+    }
+
     this.panelCtrl.render();
   }
 }

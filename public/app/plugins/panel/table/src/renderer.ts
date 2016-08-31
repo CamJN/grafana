@@ -3,6 +3,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import kbn from 'app/core/utils/kbn';
+import {multigrad_color} from './heatcolors';
 
 export class TableRenderer {
   formaters: any[];
@@ -13,15 +14,33 @@ export class TableRenderer {
     this.colorState = {};
   }
 
-  getColorForValue(value, style) {
-    if (!style.thresholds) { return null; }
-
+  discreteColor(value, style) {
     for (var i = style.thresholds.length; i > 0; i--) {
       if (value >= style.thresholds[i - 1]) {
         return style.colors[i];
       }
     }
     return _.first(style.colors);
+  }
+
+  gradColor(value, style) {
+
+    if(style.thresholds.length < 2) {
+      return style.colors[0];
+    }
+
+    var min_value = style.thresholds[0];
+    var max_value = style.thresholds[1];
+    return multigrad_color(style.colors, value, max_value, min_value);
+  }
+
+  getColorForValue(value, style) {
+    if (!style.thresholds) { return null; }
+    if(style.colorType == 'gradient') {
+      return this.gradColor(value, style);
+    } else {
+      return this.discreteColor(value, style);
+    }
   }
 
   defaultCellFormater(v, style) {
