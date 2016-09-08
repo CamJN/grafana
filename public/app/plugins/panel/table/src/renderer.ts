@@ -226,8 +226,14 @@ export class TableRenderer {
 
     fill_gradient_legend(selected.colors, canvas);
     if(selected.thresholds.length >= 2) {
-      this.panel.legendLeft  = selected.thresholds[0];
-      this.panel.legendRight = selected.thresholds[1];
+      var valueFormater = kbn.valueFormats[selected.unit];
+
+      this.panel.legendLeft  = valueFormater(
+          selected.thresholds[0], selected.decimals, null
+      );
+      this.panel.legendRight = valueFormater(
+          selected.thresholds[1], selected.decimals, null
+      );
     }
     this.panel.showLegend = true;
   }
