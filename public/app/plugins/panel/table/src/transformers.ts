@@ -177,12 +177,17 @@ transformers['data'] = {
           } else {
             var text   = row.columns[x].text;
             var target = _.find(data, function(d){return d.target == text});
-            var series = new TimeSeries({
-                datapoints: target.datapoints,
-                alias: target.target,
-            });
-            series.getFlotPairs('connected');
-            model_row.push(series.stats['avg']);
+
+            if(typeof(target) === "undefined") {
+                model_row.push(null);
+            } else {
+                var series = new TimeSeries({
+                    datapoints: target.datapoints,
+                    alias: target.target,
+                });
+                series.getFlotPairs('connected');
+                model_row.push(series.stats['avg']);
+            }
           }
       }
       model.rows.push(model_row);

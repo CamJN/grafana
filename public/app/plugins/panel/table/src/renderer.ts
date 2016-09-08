@@ -89,8 +89,10 @@ export class TableRenderer {
       let valueFormater = kbn.valueFormats[column.unit || style.unit];
 
       return v =>  {
-        if (v === null || v === void 0) {
+        if (v === void 0) {
           return '-';
+        } else if (v === null) {
+          return 'NO DATA';
         }
 
         if (_.isString(v)) {
