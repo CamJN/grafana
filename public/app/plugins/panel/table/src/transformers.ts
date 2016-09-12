@@ -14,6 +14,7 @@ transformers['timeseries_to_rows'] = {
     panel.en_sort_toggle = true;
     panel.en_column_names = false;
     panel.en_row_names = false;
+    panel.en_data_funcs  = false;
   },
   getColumns: function() {
     return [];
@@ -41,6 +42,7 @@ transformers['timeseries_to_columns'] = {
     panel.en_sort_toggle = true;
     panel.en_column_names = false;
     panel.en_row_names = false;
+    panel.en_data_funcs  = false;
   },
   getColumns: function() {
     return [];
@@ -88,6 +90,7 @@ transformers['timeseries_aggregations'] = {
     panel.en_sort_toggle = true;
     panel.en_column_names = false;
     panel.en_row_names = false;
+    panel.en_data_funcs  = false;
   },
   getColumns: function() {
     return [
@@ -131,8 +134,18 @@ transformers['timeseries_aggregations'] = {
 
 transformers['data'] = {
   description: 'Data',
+  data_function_list: [
+      {text: 'Avg', value: 'avg'},
+      {text: 'Min', value: 'min'},
+      {text: 'Max', value: 'max'},
+      {text: 'Total', value: 'total'},
+      {text: 'Current', value: 'current'},
+      {text: 'Count', value: 'count'}
+  ],
+  data_function: {text: 'Avg', value: 'avg'},
   prep_panel: function(panel) {
     panel.en_sort_toggle = false;
+    panel.en_data_funcs  = true;
     panel.sort.col  = null;
     panel.sort.desc = true;
     panel.en_column_names = true;
@@ -149,6 +162,10 @@ transformers['data'] = {
   transform: function(data, panel, model) {
     var x;
     var y;
+
+    //var data_function = this.data_function_list[this.data_function].value;
+    console.log(this.data_function);
+    var data_function = this.data_function.value;
 
     var row_len = function(row){return row.columns.length};
     var height  = panel.rows.length;
@@ -186,7 +203,7 @@ transformers['data'] = {
                     alias: target.target,
                 });
                 series.getFlotPairs('connected');
-                model_row.push(series.stats['avg']);
+                model_row.push(series.stats[data_function]);
             }
           }
       }
@@ -202,6 +219,7 @@ transformers['annotations'] = {
     panel.en_sort_toggle = true;
     panel.en_column_names = false;
     panel.en_row_names = false;
+    panel.en_data_funcs  = false;
   },
   getColumns: function() {
     return [];
@@ -229,6 +247,7 @@ transformers['table'] = {
     panel.en_sort_toggle = true;
     panel.en_column_names = false;
     panel.en_row_names = false;
+    panel.en_data_funcs  = false;
   },
   getColumns: function(data) {
     if (!data || data.length === 0) {
@@ -255,6 +274,7 @@ transformers['json'] = {
     panel.en_sort_toggle = true;
     panel.en_column_names = false;
     panel.en_row_names = false;
+    panel.en_data_funcs  = false;
   },
   getColumns: function(data) {
     if (!data || data.length === 0) {

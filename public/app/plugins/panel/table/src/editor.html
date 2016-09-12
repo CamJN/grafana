@@ -7,6 +7,18 @@
         <select class="gf-form-input" ng-model="editor.panel.transform" ng-options="k as v.description for (k, v) in editor.transformers" ng-change="editor.transformChanged()"></select>
       </div>
     </div>
+		<div class="gf-form" ng-if="editor.panel.en_data_funcs">
+			<label class="gf-form-label" style="width: 140px">
+			  Data Function
+			  <tip>
+			    Aggregating operation applied to each cell's data series.
+			  </tip>
+      </label>
+			<select class="input-large gf-form-input"
+			        ng-model="editor.transformers[editor.panel.transform].data_function"
+			        ng-options="f.text for f in editor.transformers[editor.panel.transform].data_function_list"
+			        ng-change="editor.render()"></select>
+		</div>
     <div class="gf-form">
       <label class="gf-form-label" ng-if="editor.panel.en_column_names">
         Column Names<tip>Comma separated values</tip>

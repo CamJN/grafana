@@ -48,6 +48,7 @@ class TablePanelCtrl extends MetricsPanelCtrl {
     en_sort_toggle: true,
     en_column_names: false,
     en_row_names: false,
+    en_data_funcs: false,
     showLegend: false,
     legendLeft: 0,
     legendRight: 0
