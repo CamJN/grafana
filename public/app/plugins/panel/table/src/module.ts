@@ -20,6 +20,7 @@ class TablePanelCtrl extends MetricsPanelCtrl {
   panelDefaults = {
     targets: [{}],
     transform: 'timeseries_to_columns',
+    data_function: 'avg',
     pageSize: null,
     showHeader: true,
     styles: [

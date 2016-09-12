@@ -15,8 +15,8 @@
 			  </tip>
       </label>
 			<select class="input-large gf-form-input"
-			        ng-model="editor.transformers[editor.panel.transform].data_function"
-			        ng-options="f.text for f in editor.transformers[editor.panel.transform].data_function_list"
+			        ng-model="editor.panel.data_function"
+			        ng-options="f.value as f.text for f in editor.transformers[editor.panel.transform].data_function_list"
 			        ng-change="editor.render()"></select>
 		</div>
     <div class="gf-form">

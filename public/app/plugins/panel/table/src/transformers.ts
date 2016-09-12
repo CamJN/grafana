@@ -142,7 +142,6 @@ transformers['data'] = {
       {text: 'Current', value: 'current'},
       {text: 'Count', value: 'count'}
   ],
-  data_function: {text: 'Avg', value: 'avg'},
   prep_panel: function(panel) {
     panel.en_sort_toggle = false;
     panel.en_data_funcs  = true;
@@ -163,9 +162,7 @@ transformers['data'] = {
     var x;
     var y;
 
-    //var data_function = this.data_function_list[this.data_function].value;
-    console.log(this.data_function);
-    var data_function = this.data_function.value;
+    var data_function = panel.data_function;
 
     var row_len = function(row){return row.columns.length};
     var height  = panel.rows.length;
