@@ -3,6 +3,8 @@ package conditions
 import (
 	"testing"
 
+	null "gopkg.in/guregu/null.v3"
+
 	"github.com/grafana/grafana/pkg/bus"
 	"github.com/grafana/grafana/pkg/components/simplejson"
 	m "github.com/grafana/grafana/pkg/models"
@@ -41,7 +43,8 @@ func TestQueryCondition(t *testing.T) {
 			})
 
 			Convey("should fire when avg is above 100", func() {
-				ctx.series = tsdb.TimeSeriesSlice{tsdb.NewTimeSeries("test1", [][2]float64{{120, 0}})}
+				points := tsdb.NewTimeSeriesPointsFromArgs(120, 0)
+				ctx.series = tsdb.TimeSeriesSlice{tsdb.NewTimeSeries("test1", points)}
 				ctx.exec()
 
 				So(ctx.result.Error, ShouldBeNil)
@@ -49,11 +52,58 @@ func TestQueryCondition(t *testing.T) {
 			})
 
 			Convey("Should not fire when avg is below 100", func() {
-				ctx.series = tsdb.TimeSeriesSlice{tsdb.NewTimeSeries("test1", [][2]float64{{90, 0}})}
+				points := tsdb.NewTimeSeriesPointsFromArgs(90, 0)
+				ctx.series = tsdb.TimeSeriesSlice{tsdb.NewTimeSeries("test1", points)}
 				ctx.exec()
 
 				So(ctx.result.Error, ShouldBeNil)
 				So(ctx.result.Firing, ShouldBeFalse)
+			})
+
+			Convey("Should fire if only first serie matches", func() {
+				ctx.series = tsdb.TimeSeriesSlice{
+					tsdb.NewTimeSeries("test1", tsdb.NewTimeSeriesPointsFromArgs(120, 0)),
+					tsdb.NewTimeSeries("test2", tsdb.NewTimeSeriesPointsFromArgs(0, 0)),
+				}
+				ctx.exec()
+
+				So(ctx.result.Error, ShouldBeNil)
+				So(ctx.result.Firing, ShouldBeTrue)
+			})
+
+			Convey("Empty series", func() {
+				Convey("Should set NoDataFound both series are empty", func() {
+					ctx.series = tsdb.TimeSeriesSlice{
+						tsdb.NewTimeSeries("test1", tsdb.NewTimeSeriesPointsFromArgs()),
+						tsdb.NewTimeSeries("test2", tsdb.NewTimeSeriesPointsFromArgs()),
+					}
+					ctx.exec()
+
+					So(ctx.result.Error, ShouldBeNil)
+					So(ctx.result.NoDataFound, ShouldBeTrue)
+				})
+
+				Convey("Should set NoDataFound both series contains null", func() {
+					ctx.series = tsdb.TimeSeriesSlice{
+						tsdb.NewTimeSeries("test1", tsdb.TimeSeriesPoints{tsdb.TimePoint{null.FloatFromPtr(nil), null.FloatFrom(0)}}),
+						tsdb.NewTimeSeries("test2", tsdb.TimeSeriesPoints{tsdb.TimePoint{null.FloatFromPtr(nil), null.FloatFrom(0)}}),
+					}
+					ctx.exec()
+
+					So(ctx.result.Error, ShouldBeNil)
+					So(ctx.result.NoDataFound, ShouldBeTrue)
+				})
+
+				Convey("Should not set NoDataFound if one serie is empty", func() {
+					ctx.series = tsdb.TimeSeriesSlice{
+						tsdb.NewTimeSeries("test1", tsdb.NewTimeSeriesPointsFromArgs()),
+						tsdb.NewTimeSeries("test2", tsdb.NewTimeSeriesPointsFromArgs(120, 0)),
+					}
+					ctx.exec()
+
+					So(ctx.result.Error, ShouldBeNil)
+					So(ctx.result.NoDataFound, ShouldBeFalse)
+				})
 			})
 		})
 	})

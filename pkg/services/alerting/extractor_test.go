@@ -42,9 +42,7 @@ func TestAlertRuleExtraction(t *testing.T) {
               "name": "name1",
               "message": "desc1",
               "handler": 1,
-              "enabled": true,
               "frequency": "60s",
-              "severity": "critical",
               "conditions": [
               {
                 "type": "query",
@@ -67,7 +65,6 @@ func TestAlertRuleExtraction(t *testing.T) {
               "name": "name2",
               "message": "desc2",
               "handler": 0,
-              "enabled": true,
               "frequency": "60s",
               "severity": "warning",
               "conditions": [
@@ -127,11 +124,6 @@ func TestAlertRuleExtraction(t *testing.T) {
 				Convey("should extract handler property", func() {
 					So(alerts[0].Handler, ShouldEqual, 1)
 					So(alerts[1].Handler, ShouldEqual, 0)
-				})
-
-				Convey("should extract Severity property", func() {
-					So(alerts[0].Severity, ShouldEqual, "critical")
-					So(alerts[1].Severity, ShouldEqual, "warning")
 				})
 
 				Convey("should extract frequency in seconds", func() {

@@ -22,7 +22,6 @@ func GetDataSources(c *middleware.Context) {
 
 	result := make(dtos.DataSourceList, 0)
 	for _, ds := range query.Result {
-
 		dsItem := dtos.DataSource{
 			Id:        ds.Id,
 			OrgId:     ds.OrgId,
@@ -35,6 +34,7 @@ func GetDataSources(c *middleware.Context) {
 			User:      ds.User,
 			BasicAuth: ds.BasicAuth,
 			IsDefault: ds.IsDefault,
+			JsonData:  ds.JsonData,
 		}
 
 		if plugin, exists := plugins.DataSources[ds.Type]; exists {
@@ -92,6 +92,11 @@ func AddDataSource(c *middleware.Context, cmd m.AddDataSourceCommand) {
 	cmd.OrgId = c.OrgId
 
 	if err := bus.Dispatch(&cmd); err != nil {
+		if err == m.ErrDataSourceNameExists {
+			c.JsonApiErr(409, err.Error(), err)
+			return
+		}
+
 		c.JsonApiErr(500, "Failed to add datasource", err)
 		return
 	}

@@ -5,6 +5,8 @@ import {ThresholdMapper} from './threshold_mapper';
 import {QueryPart} from 'app/core/components/query_part/query_part';
 import alertDef from './alert_def';
 import config from 'app/core/config';
+import moment from 'moment';
+import appEvents from 'app/core/app_events';
 
 export class AlertTabCtrl {
   panel: any;
@@ -16,12 +18,13 @@ export class AlertTabCtrl {
   alert: any;
   conditionModels: any;
   evalFunctions: any;
-  severityLevels: any;
+  noDataModes: any;
   addNotificationSegment;
   notifications;
   alertNotifications;
   error: string;
   appSubUrl: string;
+  alertHistory: any;
 
   /** @ngInject */
   constructor(private $scope,
@@ -38,38 +41,44 @@ export class AlertTabCtrl {
     this.subTabIndex = 0;
     this.evalFunctions = alertDef.evalFunctions;
     this.conditionTypes = alertDef.conditionTypes;
-    this.severityLevels = alertDef.severityLevels;
+    this.noDataModes = alertDef.noDataModes;
     this.appSubUrl = config.appSubUrl;
   }
 
   $onInit() {
     this.addNotificationSegment = this.uiSegmentSrv.newPlusButton();
 
-    this.initModel();
-    this.validateModel();
+    // subscribe to graph threshold handle changes
+    var thresholdChangedEventHandler = this.graphThresholdChanged.bind(this);
+    this.panelCtrl.events.on('threshold-changed', thresholdChangedEventHandler);
 
-    // set panel alert edit mode
+   // set panel alert edit mode
     this.$scope.$on("$destroy", () => {
+      this.panelCtrl.events.off("threshold-changed", thresholdChangedEventHandler);
       this.panelCtrl.editingThresholds = false;
       this.panelCtrl.render();
     });
 
-    // subscribe to graph threshold handle changes
-    this.panelCtrl.events.on('threshold-changed', this.graphThresholdChanged.bind(this));
-
-    // build notification model
+       // build notification model
     this.notifications = [];
     this.alertNotifications = [];
+    this.alertHistory = [];
 
     return this.backendSrv.get('/api/alert-notifications').then(res => {
       this.notifications = res;
 
-      _.each(this.alert.notifications, item => {
-        var model = _.findWhere(this.notifications, {id: item.id});
-        if (model) {
-          model.iconClass = this.getNotificationIcon(model.type);
-          this.alertNotifications.push(model);
-        }
+      this.initModel();
+      this.validateModel();
+    });
+  }
+
+  getAlertHistory() {
+    this.backendSrv.get(`/api/annotations?dashboardId=${this.panelCtrl.dashboard.id}&panelId=${this.panel.id}&limit=50`).then(res => {
+      this.alertHistory = _.map(res, ah => {
+        ah.time = moment(ah.time).format('MMM D, YYYY HH:mm:ss');
+        ah.stateModel = alertDef.getStateDisplayModel(ah.newState);
+        ah.metrics = alertDef.joinEvalMatches(ah.data, ', ');
+        return ah;
       });
     });
   }
@@ -88,14 +97,25 @@ export class AlertTabCtrl {
     }));
   }
 
+  changeTabIndex(newTabIndex) {
+    this.subTabIndex = newTabIndex;
+
+    if (this.subTabIndex === 2) {
+      this.getAlertHistory();
+    }
+  }
 
   notificationAdded() {
-    var model = _.findWhere(this.notifications, {name: this.addNotificationSegment.value});
+    var model = _.find(this.notifications, {name: this.addNotificationSegment.value});
     if (!model) {
       return;
     }
 
-    this.alertNotifications.push({name: model.name, iconClass: this.getNotificationIcon(model.type)});
+    this.alertNotifications.push({
+      name: model.name,
+      iconClass: this.getNotificationIcon(model.type),
+      isDefault: false
+    });
     this.alert.notifications.push({id: model.id});
 
     // reset plus button
@@ -109,14 +129,17 @@ export class AlertTabCtrl {
   }
 
   initModel() {
-    var alert = this.alert = this.panel.alert = this.panel.alert || {};
+    var alert = this.alert = this.panel.alert;
+    if (!alert) {
+      return;
+    }
 
     alert.conditions = alert.conditions || [];
     if (alert.conditions.length === 0) {
       alert.conditions.push(this.buildDefaultCondition());
     }
 
-    alert.severity = alert.severity || 'critical';
+    alert.noDataState = alert.noDataState || 'no_data';
     alert.frequency = alert.frequency || '60s';
     alert.handler = alert.handler || 1;
     alert.notifications = alert.notifications || [];
@@ -129,11 +152,25 @@ export class AlertTabCtrl {
       return memo;
     }, []);
 
-    if (this.alert.enabled) {
-      this.panelCtrl.editingThresholds = true;
+    ThresholdMapper.alertToGraphThresholds(this.panel);
+
+    for (let addedNotification of alert.notifications) {
+      var model = _.find(this.notifications, {id: addedNotification.id});
+      if (model) {
+        model.iconClass = this.getNotificationIcon(model.type);
+        this.alertNotifications.push(model);
+      }
     }
 
-    ThresholdMapper.alertToGraphThresholds(this.panel);
+    for (let notification of this.notifications) {
+      if (notification.isDefault) {
+        notification.iconClass = this.getNotificationIcon(notification.type);
+        notification.bgColor = "#00678b";
+        this.alertNotifications.push(notification);
+      }
+    }
+
+    this.panelCtrl.editingThresholds = true;
     this.panelCtrl.render();
   }
 
@@ -157,6 +194,10 @@ export class AlertTabCtrl {
   }
 
   validateModel() {
+    if (!this.alert) {
+      return;
+    }
+
     let firstTarget;
     var fixed = false;
     let foundTarget = null;
@@ -188,10 +229,12 @@ export class AlertTabCtrl {
 
       var datasourceName = foundTarget.datasource || this.panel.datasource;
       this.datasourceSrv.get(datasourceName).then(ds => {
-        if (ds.meta.id !== 'graphite') {
-          this.error = 'Currently the alerting backend only supports Graphite queries';
+        if (!ds.meta.alerting) {
+          this.error = 'The datasource does not support alerting queries';
         } else if (this.templateSrv.variableExists(foundTarget.target)) {
           this.error = 'Template variables are not supported in alert queries';
+        } else {
+          this.error = '';
         }
       });
     }
@@ -261,23 +304,28 @@ export class AlertTabCtrl {
   }
 
   delete() {
-    this.alert = this.panel.alert = {enabled: false};
-    this.panel.thresholds = [];
-    this.conditionModels = [];
-    this.panelCtrl.render();
+    appEvents.emit('confirm-modal', {
+      title: 'Delete Alert',
+      text: 'Are you sure you want to delete this alert rule?',
+      text2: 'You need to save dashboard for the delete to take effect',
+      icon: 'fa-trash',
+      yesText: 'Delete',
+      onConfirm: () => {
+        delete this.panel.alert;
+        this.alert = null;
+        this.panel.thresholds = [];
+        this.conditionModels = [];
+        this.panelCtrl.render();
+      }
+    });
   }
 
   enable() {
-    this.alert.enabled = true;
+    this.panel.alert = {};
     this.initModel();
   }
 
   evaluatorParamsChanged() {
-    ThresholdMapper.alertToGraphThresholds(this.panel);
-    this.panelCtrl.render();
-  }
-
-  severityChanged() {
     ThresholdMapper.alertToGraphThresholds(this.panel);
     this.panelCtrl.render();
   }
