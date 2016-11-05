@@ -1,0 +1,47 @@
+<div class="modal-body">
+	<div class="modal-header">
+		<h2 class="modal-header-title">
+			<i class="fa fa-question-circle"></i>
+			<span class="p-l-1">Help</span>
+		</h2>
+
+		<ul class="gf-tabs">
+			<li class="gf-tabs-item" ng-repeat="tab in ['Shortcuts']">
+				<a class="gf-tabs-link" ng-click="ctrl.tabindex = $index" ng-class="{active: ctrl.tabIndex === $index}">
+					{{::tab}}
+				</a>
+			</li>
+		</ul>
+
+		<a class="modal-header-close" ng-click="ctrl.dismiss();">
+			<i class="fa fa-remove"></i>
+		</a>
+	</div>
+
+	<div class="modal-content help-modal">
+
+		<p class="small pull-right" style="position: relative; top: -10px;, right: -10px; margin: 0;">
+			<span class="shortcut-table-key">mod</span> =
+			<span class="muted">CTRL on windows, CMD key on Mac</span>
+		</p>
+
+		<div ng-repeat="(category, shortcuts) in ctrl.shortcuts">
+			<table class="shortcut-table">
+				<tbody>
+					<tr>
+						<th colspan="2">{{category}}</th>
+					</tr>
+					<tr ng-repeat="shortcut in shortcuts">
+						<td><span class="shortcut-table-key">{{shortcut.key}}</span></td>
+						<td>{{shortcut.description}}</td>
+					</tr>
+					<tbody>
+			</table>
+			<div class="clearfix" ng-if="$index%3==2"></div>
+		</div>
+
+		<div class="clearfix"></div>
+
+	</div>
+
+</div>
