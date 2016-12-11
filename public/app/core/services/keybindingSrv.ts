@@ -89,6 +89,7 @@ export class KeybindingSrv {
 
     this.bind('mod+o', () => {
       dashboard.sharedCrosshair = !dashboard.sharedCrosshair;
+      appEvents.emit('graph-hover-clear');
       scope.broadcastRefresh();
     });
 
@@ -101,7 +102,11 @@ export class KeybindingSrv {
     });
 
     this.bind('t z', () => {
-      scope.appEvent('zoom-out');
+      scope.appEvent('zoom-out', 2);
+    });
+
+    this.bind('ctrl+z', () => {
+      scope.appEvent('zoom-out', 2);
     });
 
     this.bind('t left', () => {
@@ -188,6 +193,14 @@ export class KeybindingSrv {
 
     this.bind('d s', () => {
       this.showDashEditView('settings');
+    });
+
+    this.bind('d k', () => {
+      appEvents.emit('toggle-kiosk-mode');
+    });
+
+    this.bind('d v', () => {
+      appEvents.emit('toggle-view-mode');
     });
 
     this.bind('esc', () => {

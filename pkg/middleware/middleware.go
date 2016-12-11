@@ -187,6 +187,7 @@ func (ctx *Context) Handle(status int, title string, err error) {
 	}
 
 	ctx.Data["Title"] = title
+	ctx.Data["AppSubUrl"] = setting.AppSubUrl
 	ctx.HTML(status, strconv.Itoa(status))
 }
 
@@ -226,6 +227,10 @@ func (ctx *Context) JsonApiErr(status int, message string, err error) {
 
 func (ctx *Context) HasUserRole(role m.RoleType) bool {
 	return ctx.OrgRole.Includes(role)
+}
+
+func (ctx *Context) HasHelpFlag(flag m.HelpFlags1) bool {
+	return ctx.HelpFlags1.HasFlag(flag)
 }
 
 func (ctx *Context) TimeRequest(timer metrics.Timer) {

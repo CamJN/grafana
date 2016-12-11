@@ -9,18 +9,17 @@ import 'jquery.flot.fillbelow';
 import 'jquery.flot.crosshair';
 import './jquery.flot.events';
 
-import angular from 'angular';
 import $ from 'jquery';
-import moment from 'moment';
 import _ from 'lodash';
+import moment from 'moment';
 import kbn from   'app/core/utils/kbn';
+import {appEvents, coreModule} from 'app/core/core';
 import GraphTooltip from './graph_tooltip';
 import {ThresholdManager} from './threshold_manager';
 
-var module = angular.module('grafana.directives');
 var labelWidthCache = {};
 
-module.directive('grafanaGraph', function($rootScope, timeSrv) {
+coreModule.directive('grafanaGraph', function($rootScope, timeSrv) {
   return {
     restrict: 'A',
     template: '',
@@ -28,14 +27,19 @@ module.directive('grafanaGraph', function($rootScope, timeSrv) {
       var ctrl = scope.ctrl;
       var dashboard = ctrl.dashboard;
       var panel = ctrl.panel;
-      var data, annotations;
+      var data;
+      var annotations;
+      var plot;
       var sortedSeries;
       var legendSideLastValue = null;
       var rootScope = scope.$root;
       var panelWidth = 0;
       var thresholdManager = new ThresholdManager(ctrl);
-      var plot;
+      var tooltip = new GraphTooltip(elem, dashboard, scope, function() {
+        return sortedSeries;
+      });
 
+      // panel events
       ctrl.events.on('panel-teardown', () => {
         thresholdManager = null;
 
@@ -45,26 +49,6 @@ module.directive('grafanaGraph', function($rootScope, timeSrv) {
         }
       });
 
-      rootScope.onAppEvent('setCrosshair', function(event, info) {
-        // do not need to to this if event is from this panel
-        if (info.scope === scope) {
-          return;
-        }
-
-        if (dashboard.sharedCrosshair) {
-          if (plot) {
-            plot.setCrosshair({ x: info.pos.x, y: info.pos.y });
-          }
-        }
-      }, scope);
-
-      rootScope.onAppEvent('clearCrosshair', function() {
-        if (plot) {
-          plot.clearCrosshair();
-        }
-      }, scope);
-
-      // Receive render events
       ctrl.events.on('render', function(renderData) {
         data = renderData || data;
         if (!data) {
@@ -73,6 +57,27 @@ module.directive('grafanaGraph', function($rootScope, timeSrv) {
         annotations = ctrl.annotations;
         render_panel();
       });
+
+      // global events
+      appEvents.on('graph-hover', function(evt) {
+        // ignore other graph hover events if shared tooltip is disabled
+        if (!dashboard.sharedCrosshair) {
+          return;
+        }
+
+        // ignore if we are the emitter
+        if (!plot || evt.panel.id === panel.id || ctrl.otherPanelInFullscreenMode()) {
+          return;
+        }
+
+        tooltip.show(evt.pos);
+      }, scope);
+
+      appEvents.on('graph-hover-clear', function(event, info) {
+        if (plot) {
+          tooltip.clear(plot);
+        }
+      }, scope);
 
       function getLegendHeight(panelHeight) {
         if (!panel.legend.show || panel.legend.rightSide) {
@@ -183,6 +188,34 @@ module.directive('grafanaGraph', function($rootScope, timeSrv) {
         }
       }
 
+      // Series could have different timeSteps,
+      // let's find the smallest one so that bars are correctly rendered.
+      // In addition, only take series which are rendered as bars for this.
+      function getMinTimeStepOfSeries(data) {
+        var min = Number.MAX_VALUE;
+
+        for (let i = 0; i < data.length; i++) {
+          if (!data[i].stats.timeStep) {
+            continue;
+          }
+          if (panel.bars) {
+            if (data[i].bars && data[i].bars.show === false) {
+              continue;
+            }
+          } else {
+            if (typeof data[i].bars === 'undefined' || typeof data[i].bars.show === 'undefined' || !data[i].bars.show) {
+              continue;
+            }
+          }
+
+          if (data[i].stats.timeStep < min) {
+            min = data[i].stats.timeStep;
+          }
+        }
+
+        return min;
+      }
+
       // Function for rendering panel
       function render_panel() {
         panelWidth =  elem.width();
@@ -244,7 +277,7 @@ module.directive('grafanaGraph', function($rootScope, timeSrv) {
             color: '#666'
           },
           crosshair: {
-            mode: panel.tooltip.shared || dashboard.sharedCrosshair ? "x" : null
+            mode: 'x'
           }
         };
 
@@ -279,9 +312,7 @@ module.directive('grafanaGraph', function($rootScope, timeSrv) {
             break;
           }
           default: {
-            if (data.length && data[0].stats.timeStep) {
-              options.series.bars.barWidth = data[0].stats.timeStep / 1.5;
-            }
+            options.series.bars.barWidth = getMinTimeStepOfSeries(data) / 1.5;
             addTimeAxis(options);
             break;
           }
@@ -444,7 +475,7 @@ module.directive('grafanaGraph', function($rootScope, timeSrv) {
           show: panel.yaxes[0].show,
           index: 1,
           logBase: panel.yaxes[0].logBase || 1,
-          max: 100, // correct later
+          max: null
         };
 
         options.yaxes.push(defaults);
@@ -456,6 +487,8 @@ module.directive('grafanaGraph', function($rootScope, timeSrv) {
           secondY.logBase = panel.yaxes[1].logBase || 1;
           secondY.position = 'right';
           options.yaxes.push(secondY);
+
+          applyLogScale(options.yaxes[1], data);
           configureAxisMode(options.yaxes[1], panel.percentage && panel.stack ? "percent" : panel.yaxes[1].format);
         }
 
@@ -536,10 +569,6 @@ module.directive('grafanaGraph', function($rootScope, timeSrv) {
 
         return "%H:%M";
       }
-
-      var tooltip = new GraphTooltip(elem, dashboard, scope, function() {
-        return sortedSeries;
-      });
 
       elem.bind("plotselected", function (event, ranges) {
         scope.$apply(function() {

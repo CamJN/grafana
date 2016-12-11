@@ -66,7 +66,7 @@ class GraphCtrl extends MetricsPanelCtrl {
     // fill factor
     fill          : 1,
     // line width in pixels
-    linewidth     : 2,
+    linewidth     : 1,
     // show hide points
     points        : false,
     // point radius in pixels
@@ -88,7 +88,7 @@ class GraphCtrl extends MetricsPanelCtrl {
       avg: false
     },
     // how null points should be handled
-    nullPointMode : 'connected',
+    nullPointMode : 'null',
     // staircase line mode
     steppedLine: false,
     // tooltip options
@@ -96,7 +96,6 @@ class GraphCtrl extends MetricsPanelCtrl {
       value_type: 'individual',
       shared: true,
       sort: 0,
-      msResolution: false,
     },
     // time overrides
     timeFrom: null,

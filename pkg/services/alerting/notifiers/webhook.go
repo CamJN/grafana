@@ -51,11 +51,15 @@ func (this *WebhookNotifier) Notify(evalContext *alerting.EvalContext) error {
 
 	ruleUrl, err := evalContext.GetRuleUrl()
 	if err == nil {
-		bodyJSON.Set("rule_url", ruleUrl)
+		bodyJSON.Set("ruleUrl", ruleUrl)
 	}
 
 	if evalContext.ImagePublicUrl != "" {
-		bodyJSON.Set("image_url", evalContext.ImagePublicUrl)
+		bodyJSON.Set("imageUrl", evalContext.ImagePublicUrl)
+	}
+
+	if evalContext.Rule.Message != "" {
+		bodyJSON.Set("message", evalContext.Rule.Message)
 	}
 
 	body, _ := bodyJSON.MarshalJSON()

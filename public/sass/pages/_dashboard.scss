@@ -13,32 +13,7 @@
   color: $variable;
 }
 
-.playlist-active {
-  .add-row-panel-hint,
-  .dashnav-refresh-action,
-  .dashnav-zoom-out,
-  .dashnav-action-icons,
-  .dash-row-menu,
-  .dashnav-move-timeframe  {
-    display: none;
-  }
 
-  .grafana-menu-stop-playlist {
-    display: list-item;
-  }
-}
-
-.hide-controls {
-  .add-row-panel-hint {
-    display: none;
-  }
-  .dash-row-menu {
-    display: none;
-  }
-  .panel-drop-zone {
-    visibility: hidden;
-  }
-}
 
 div.flot-text {
   color: $text-color !important;
@@ -47,6 +22,15 @@ div.flot-text {
 .panel {
   display: inline-block;
   float: left;
+
+  &--solo {
+    .resize-panel-handle {
+      display: none;
+    }
+    .panel-container {
+      border: none;
+    }
+  }
 }
 
 .panel-margin {
@@ -188,6 +172,12 @@ div.flot-text {
   }
 }
 
+.panel-in-fullscreen {
+  .panel-drop-zone {
+    display: none !important;
+  }
+}
+
 .panel-time-info {
   font-weight: bold;
   float: right;
@@ -207,7 +197,15 @@ div.flot-text {
   width: 15px;
   height: 15px;
   display: block;
-  color: $panel-bg;
+  color: $text-color-faint;
+  overflow: hidden;
+
+  &:before {
+    left: initial;
+    right: -5px;
+    bottom: 0px;
+    position: absolute;
+  }
 }
 
 .dashboard-header {
@@ -221,13 +219,3 @@ div.flot-text {
   }
 }
 
-.resize-panel-handle {
-  color: $text-color-faint;
-  overflow: hidden;
-  &:before {
-    left: initial;
-    right: -5px;
-    bottom: 0px;
-    position: absolute;
-  }
-}
