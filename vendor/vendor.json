@@ -315,6 +315,20 @@
 			"versionExact": "v1.21.1"
 		},
 		{
+			"checksumSHA1": "p2tZXzCcU1cXEzjIviqlMEj4f+s=",
+			"path": "github.com/gogo/protobuf/proto",
+			"revision": "0394392b81058a7f972029451f06e528bb18ba50",
+			"revisionTime": "2016-09-25T16:11:25Z"
+		},
+		{
+			"checksumSHA1": "Z0RpNb7+aEr2naDfz5GqllKRfxQ=",
+			"path": "github.com/influxdata/influxdb/influxql",
+			"revision": "e47cf1f2e83a02443d7115c54f838be8ee959644",
+			"revisionTime": "2016-12-06T21:36:15Z",
+			"version": "v1.1.1",
+			"versionExact": "v1.1.1"
+		},
+		{
 			"checksumSHA1": "SMUvX2B8eoFd9wnPofwBKlN6btE=",
 			"path": "github.com/prometheus/client_golang/api/prometheus",
 			"revision": "5636dc67ae776adf5590da7349e70fbb9559972d",
