@@ -57,6 +57,7 @@ func (this *EmailNotifier) Notify(evalContext *alerting.EvalContext) error {
 
 	cmd := &m.SendEmailCommandSync{
 		SendEmailCommand: m.SendEmailCommand{
+			Subject: evalContext.GetNotificationTitle(),
 			Data: map[string]interface{}{
 				"Title":        evalContext.GetNotificationTitle(),
 				"State":        evalContext.Rule.State,
@@ -89,6 +90,7 @@ func (this *EmailNotifier) Notify(evalContext *alerting.EvalContext) error {
 
 	if err != nil {
 		this.log.Error("Failed to send alert notification email", "error", err)
+		return err
 	}
 	return nil
 
