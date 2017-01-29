@@ -1,4 +1,4 @@
-///<reference path="../../../headers/common.d.ts" />
+///<reference path="../../../../headers/common.d.ts" />
 
 import _ from 'lodash';
 import moment from 'moment';
@@ -164,15 +164,15 @@ transformers['data'] = {
 
     var data_function = panel.data_function;
 
-    var row_len = function(row){return row.columns.length};
+    var row_len = function(row){return row.columns.length;};
     var height  = panel.rows.length;
     var width   = _.max(panel.rows, row_len).columns.length;
 
     for (x = 0; x < width; x++) {
       var text;
-      if(x < panel.column_names.length) {
+      if (x < panel.column_names.length) {
         text = panel.column_names[x];
-      } else if(x < panel.column_heads.length) {
+      } else if (x < panel.column_heads.length) {
         text = panel.column_heads[x].text;
       } else {
         text = "NO NAME";
@@ -180,19 +180,19 @@ transformers['data'] = {
       model.columns.push({text: text});
     }
 
-    for(y = 0; y < height; y++) {
+    for (y = 0; y < height; y++) {
       var model_row = [];
       var row = panel.rows[y];
-      for(x = 0; x < width; x++) {
-          if(x >= row_len(row)) {
+      for (x = 0; x < width; x++) {
+          if (x >= row_len(row)) {
             model_row.push(void(0));
-          } else if(row.columns[x].text === 'EMPTY') {
+          } else if (row.columns[x].text === 'EMPTY') {
             model_row.push(void(0));
           } else {
             var text   = row.columns[x].text;
-            var target = _.find(data, function(d){return d.target == text});
+            var target = _.find(data, function(d){return d.target === text;});
 
-            if(typeof(target) === "undefined") {
+            if (typeof(target) === "undefined") {
                 model_row.push(null);
             } else {
                 var series = new TimeSeries({

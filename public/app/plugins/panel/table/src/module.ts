@@ -1,4 +1,4 @@
-///<reference path="../../../headers/common.d.ts" />
+///<reference path="../../../../headers/common.d.ts" />
 
 import angular from 'angular';
 import _ from 'lodash';
@@ -135,7 +135,7 @@ class TablePanelCtrl extends MetricsPanelCtrl {
 
   toggleColumnSort(col, colIndex) {
 
-    if(!this.panel.en_sort_toggle) {
+    if (!this.panel.en_sort_toggle) {
       return;
     }
     // remove sort flag from current column

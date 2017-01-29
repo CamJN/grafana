@@ -2,11 +2,13 @@
 export default class TableModel {
   columns: any[];
   rows: any[];
+  row_names: any[];
   type: string;
 
   constructor() {
     this.columns = [];
     this.rows = [];
+    this.row_names = [];
     this.type = 'table';
   }
 

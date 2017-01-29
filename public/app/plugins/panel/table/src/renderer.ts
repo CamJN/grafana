@@ -1,4 +1,4 @@
-///<reference path="../../../headers/common.d.ts" />
+///<reference path="../../../../headers/common.d.ts" />
 
 import _ from 'lodash';
 import moment from 'moment';
@@ -25,7 +25,7 @@ export class TableRenderer {
 
   gradColor(value, style) {
 
-    if(style.thresholds.length < 2) {
+    if (style.thresholds.length < 2) {
       return style.colors[0];
     }
 
@@ -36,7 +36,7 @@ export class TableRenderer {
 
   getColorForValue(value, style) {
     if (!style.thresholds) { return null; }
-    if(style.colorType == 'gradient') {
+    if (style.colorType === 'gradient') {
       return this.gradColor(value, style);
     } else {
       return this.discreteColor(value, style);
@@ -172,11 +172,11 @@ export class TableRenderer {
       let rowStyle = '';
       let name     = this.table.row_names[y];
 
-      if(typeof(name) == 'undefined') {
-      	      name = '';
+      if (typeof(name) === 'undefined') {
+        name = '';
       }
 
-      cellHtml += '<th style="color: #33B5E5">' + name + '</td>'
+      cellHtml += '<th style="color: #33B5E5">' + name + '</td>';
       for (var i = 0; i < this.table.columns.length; i++) {
         cellHtml += this.renderCell(i, row[i], y === startPos);
       }
@@ -213,19 +213,19 @@ export class TableRenderer {
     var selected;
     var styles = this.panel.styles;
 
-    for(var i = 0; i < styles.length; i++) {
-      if(styles[i].colorType == 'gradient' && styles[i].legendOn) {
+    for (var i = 0; i < styles.length; i++) {
+      if (styles[i].colorType === 'gradient' && styles[i].legendOn) {
         selected = styles[i];
         break;
       }
     }
-    if(typeof(selected) === 'undefined') {
+    if (typeof(selected) === 'undefined') {
       this.panel.showLegend = false;
       return;
     }
 
-    fill_gradient_legend(selected.colors, canvas);
-    if(selected.thresholds.length >= 2) {
+    fill_gradient_legend(selected.colors, canvas, true);
+    if (selected.thresholds.length >= 2) {
       var valueFormater = kbn.valueFormats[selected.unit];
 
       this.panel.legendLeft  = valueFormater(

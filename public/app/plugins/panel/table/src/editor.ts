@@ -1,4 +1,4 @@
-///<reference path="../../../headers/common.d.ts" />
+///<reference path="../../../../headers/common.d.ts" />
 
 
 import _ from 'lodash';
@@ -15,6 +15,7 @@ export class TablePanelEditorCtrl {
   transformers: any;
   colorModes: any;
   columnStyles: any;
+  colorTypes: any;
   columnTypes: any;
   fontSizes: any;
   dateFormats: any;
@@ -104,12 +105,12 @@ export class TablePanelEditorCtrl {
     var i;
     var n;
 
-    for(i = 0; i < this.panel.rows.length; i++) {
+    for (i = 0; i < this.panel.rows.length; i++) {
       var row     = this.panel.rows[i];
       var columns = row.columns;
       var index   = _.indexOf(columns, column);
 
-      if(index != -1) {
+      if (index !== -1) {
         columns.splice(index, 1);
         break;
       }
@@ -145,7 +146,7 @@ export class TablePanelEditorCtrl {
   }
 
   removeRow(row) {
-    if(this.panel.rows.length === 1) {
+    if (this.panel.rows.length === 1) {
       return;
     }
     this.panel.rows = _.without(this.panel.rows, row);
@@ -162,7 +163,7 @@ export class TablePanelEditorCtrl {
     var ref   = style.colors;
     var len   = style.colorType === 'discrete' ? 3 : 5;
 
-    for(var i = 0; i < Math.floor(len / 2); i += 1) {
+    for (var i = 0; i < Math.floor(len / 2); i += 1) {
       var tmp = ref[i];
       ref[i] = ref[len - i - 1];
       ref[len - i - 1] = tmp;
