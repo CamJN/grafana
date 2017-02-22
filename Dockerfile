@@ -20,6 +20,9 @@ ADD . /usr/local/go/src/github.com/grafana/grafana
 WORKDIR /usr/local/go/src/github.com/grafana/grafana
 run rm -rf node_modules
 run yarn install --pure-lockfile
+run npm run build
+#run go run build.go setup
+run go run build.go build
 run go run build.go pkg-rpm
 
 CMD base64 dist/grafana-*.rpm
