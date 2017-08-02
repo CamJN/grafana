@@ -9,7 +9,7 @@ run npm install -g yarn
 
 WORKDIR /root
 run mkdir go
-run wget https://storage.googleapis.com/golang/go1.7.5.linux-amd64.tar.gz -O go/go1.7.5.linux-amd64.tar.gz
+run wget https://storage.googleapis.com/golang/go1.8.1.linux-amd64.tar.gz -O go/go1.8.1.linux-amd64.tar.gz
 run tar -C /usr/local -xzf go/*.tar.gz
 run rm -rf go
 env PATH $PATH:/usr/local/go/bin
